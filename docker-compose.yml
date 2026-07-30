@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # PWA Static Files (Nginx)
+  frontend:
+    image: nginx:alpine
+    container_name: zhovika-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: zhovika-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Telegram Bot (optional - can run separately)
+  bot:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.bot
+    container_name: zhovika-bot
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - backend
+    profiles:
+      - bot
+
+  # Redis (for caching and sessions)
+  redis:
+    image: redis:7-alpine
+    container_name: zhovika-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
