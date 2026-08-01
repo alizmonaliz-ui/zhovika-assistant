@@ -1,0 +1,2852 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#050505"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ZHOVIKA"/>
+<meta name="description" content="دستیار شخصی هوشمند ZHOVIKA - مدیریت وظایف، ورزش، زبان، بودجه"/>
+<title>ZHOVIKA — دستیار شخصی هوشمند</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--gold:#C9A84C;--gl:#E8C97A;--gd:#8B6914;--bg:#050505;--bg2:#0a0804;--bg3:#11100c;--bg4:#1a1814;--text:#fff;--text2:rgba(255,255,255,.75);--text3:rgba(255,255,255,.45);--border:rgba(201,168,76,.12);--accent:rgba(201,168,76,.1);--success:#4CAF50;--danger:#ff4444;--info:#2196F3}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:'Vazirmatn',sans-serif;direction:rtl;color:var(--text);overflow:hidden;touch-action:manipulation}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes ripple{0%{transform:scale(0);opacity:.5}100%{transform:scale(4);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes recording{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(201,168,76,.4)}50%{transform:scale(1.1);box-shadow:0 0 0 12px rgba(201,168,76,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(201,168,76,0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 5px rgba(201,168,76,.3)}50%{box-shadow:0 0 20px rgba(201,168,76,.6)}}
+
+.gs{background:linear-gradient(90deg,var(--gd),var(--gl),var(--gold),var(--gl),var(--gd));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite}
+.btn-gold{background:linear-gradient(135deg,var(--gd),var(--gold),var(--gl));color:#0a0a0a;border:none;cursor:pointer;font-family:'Vazirmatn',sans-serif;font-weight:700;transition:all .25s;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;padding:.7rem 1.4rem;font-size:.85rem;box-shadow:0 4px 15px rgba(201,168,76,.2)}
+.btn-gold:hover{filter:brightness(1.15);transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,.4)}
+.btn-gold:active{transform:translateY(0) scale(.98)}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--gl);cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all .25s;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;padding:.6rem 1.2rem;font-size:.8rem;font-weight:600}
+.btn-outline:hover{border-color:var(--gold);background:var(--accent)}
+.btn-icon{width:44px;height:44px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border);color:var(--gl);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:1.2rem}
+.btn-icon:hover{background:var(--accent);border-color:var(--gold);transform:scale(1.08)}
+.btn-icon:active{transform:scale(.95)}
+
+/* App Shell */
+.app{display:flex;height:100vh;flex-direction:column;position:relative}
+.header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:.7rem 1rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+.header-title{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.header-actions{display:flex;gap:10px;align-items:center}
+
+/* Online Toggle */
+.online-toggle{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1.5px solid var(--border);border-radius:100px;padding:3px 12px 3px 3px;cursor:pointer;transition:all .3s}
+.online-toggle.online{border-color:var(--gold);background:rgba(201,168,76,.1);box-shadow:0 0 10px rgba(201,168,76,.15)}
+.online-toggle .dot{width:8px;height:8px;border-radius:50%;background:#444;transition:all .3s}
+.online-toggle.online .dot{background:var(--success);box-shadow:0 0 10px var(--success)}
+.online-toggle .txt{font-size:.65rem;color:var(--text3);transition:all .3s;font-weight:600}
+.online-toggle.online .txt{color:var(--gl)}
+
+/* Install Banner */
+.install-banner{position:fixed;top:56px;left:0;right:0;z-index:99;background:linear-gradient(90deg,var(--gd),var(--gold));color:#000;padding:.6rem 1rem;display:flex;align-items:center;justify-content:space-between;transform:translateY(-100%);transition:transform .4s ease;font-size:.8rem;font-weight:600}
+.install-banner.show{transform:translateY(0)}
+.install-banner button{background:rgba(0,0,0,.2);border:none;color:#000;padding:.3rem .8rem;border-radius:6px;font-family:'Vazirmatn';font-weight:700;cursor:pointer}
+
+/* Main Content */
+.main-content{flex:1;margin-top:56px;margin-bottom:64px;overflow-y:auto;overflow-x:hidden;padding:1rem;animation:fadeIn .5s ease;scroll-behavior:smooth}
+.main-content::-webkit-scrollbar{width:4px}
+.main-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.97);backdrop-filter:blur(24px);border-top:1.5px solid var(--border);display:flex;justify-content:space-around;padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom));height:64px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;cursor:pointer;transition:all .25s;border-radius:10px;color:var(--text3);font-size:.6rem;font-weight:600;position:relative}
+.nav-item .icon{font-size:1.4rem;transition:all .25s}
+.nav-item.active{color:var(--gold)}
+.nav-item.active .icon{transform:translateY(-3px);filter:drop-shadow(0 4px 8px rgba(201,168,76,.4))}
+.nav-item:hover{color:var(--gl)}
+.nav-badge{position:absolute;top:0;right:calc(50% - 16px);background:var(--gold);color:#000;font-size:.5rem;font-weight:800;padding:1px 5px;border-radius:100px;min-width:16px;text-align:center;box-shadow:0 2px 6px rgba(201,168,76,.4)}
+
+/* Cards */
+.card{background:linear-gradient(160deg,var(--bg4),var(--bg3) 60%);border:1.5px solid var(--border);border-radius:16px;padding:1.1rem;margin-bottom:1rem;animation:fadeIn .5s ease;transition:all .25s;box-shadow:0 4px 18px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.02)}
+.card:hover{border-color:rgba(201,168,76,.28);box-shadow:0 8px 26px rgba(0,0,0,.35),0 0 0 1px rgba(201,168,76,.06)}
+.card:hover{border-color:rgba(201,168,76,.2);transform:translateY(-1px)}
+.card-title{font-size:.92rem;font-weight:700;letter-spacing:.2px;background:linear-gradient(90deg,var(--gl),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.8rem;display:flex;align-items:center;gap:8px}
+
+/* Inputs */
+.input{background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:.7rem 1rem;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:.85rem;width:100%;outline:none;transition:all .2s}
+.input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,168,76,.08)}
+.input::placeholder{color:var(--text3)}
+textarea.input{resize:vertical;min-height:90px}
+select.input{cursor:pointer}
+
+/* Task Items */
+.task-item{display:flex;align-items:center;gap:12px;padding:.8rem 1rem;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);margin-bottom:.6rem;cursor:pointer;transition:all .2s}
+.task-item:hover{border-color:rgba(201,168,76,.25);transform:translateX(-4px)}
+.task-item.completed{opacity:.5}
+.task-item.completed .task-text{text-decoration:line-through;color:var(--text3)}
+.task-check{width:22px;height:22px;border:2.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:.7rem;color:transparent}
+.task-item.completed .task-check{background:var(--gold);border-color:var(--gold);color:#000}
+.task-text{flex:1;font-size:.85rem;font-weight:500}
+.task-delete{color:var(--danger);opacity:0;transition:all .2s;font-size:1.1rem;padding:4px}
+.task-item:hover .task-delete{opacity:1}
+.task-priority{width:4px;height:100%;border-radius:2px;flex-shrink:0}
+.task-priority.high{background:var(--danger)}
+.task-priority.medium{background:var(--gold)}
+.task-priority.low{background:var(--success)}
+
+/* Notes */
+.note-card{background:var(--bg4);border:1.5px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.7rem;cursor:pointer;transition:all .25s;position:relative}
+.note-card:hover{border-color:rgba(201,168,76,.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.note-title{font-size:.85rem;font-weight:700;margin-bottom:.4rem}
+.note-preview{font-size:.75rem;color:var(--text3);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note-date{font-size:.65rem;color:var(--text3);margin-top:.5rem;font-weight:500}
+
+/* Calendar - Persian */
+.cal-container{background:var(--bg3);border:1.5px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
+.cal-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.cal-nav-btn{width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);color:var(--gl);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:1rem}
+.cal-nav-btn:hover{background:var(--accent);border-color:var(--gold)}
+.cal-title{font-size:1.1rem;font-weight:800;color:var(--gold)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal-day-header{font-size:.7rem;color:var(--text3);padding:.4rem;font-weight:600}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:.8rem;cursor:pointer;transition:all .2s;position:relative;font-weight:500;min-height:44px}
+.cal-day:hover{background:var(--accent);transform:scale(1.08)}
+.cal-day.today{background:var(--gold);color:#000;font-weight:800;box-shadow:0 4px 12px rgba(201,168,76,.4)}
+.cal-day.selected{background:var(--accent);border:1.5px solid var(--gold)}
+.cal-day.has-event::after{content:'';position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 4px var(--gold)}
+.cal-day.has-task::before{content:'';position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:var(--info)}
+.cal-day.other-month{color:var(--text3);opacity:.3}
+.cal-day.friday{color:var(--danger);opacity:.8}
+
+/* Day Detail Panel */
+.day-panel{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:1rem;margin-top:1rem;animation:slideUp .3s ease}
+.day-panel-title{font-size:.9rem;font-weight:700;color:var(--gl);margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center}
+
+/* Budget */
+.budget-bar{height:10px;background:var(--bg2);border-radius:5px;overflow:hidden;margin:.6rem 0}
+.budget-fill{height:100%;border-radius:5px;transition:width .6s ease;background:linear-gradient(90deg,var(--gd),var(--gold))}
+.budget-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.budget-row:last-child{border-bottom:none}
+
+/* Exercise */
+.ex-stat{display:flex;gap:12px;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:none}
+.ex-stat::-webkit-scrollbar{display:none}
+.ex-stat-item{flex-shrink:0;background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.2rem;min-width:110px;text-align:center;transition:all .2s}
+.ex-stat-item:hover{border-color:rgba(201,168,76,.25);transform:translateY(-2px)}
+.ex-stat-value{font-size:1.3rem;font-weight:800;color:var(--gold)}
+.ex-stat-label{font-size:.65rem;color:var(--text3);margin-top:3px;font-weight:500}
+
+/* Chat */
+.chat-container{display:flex;flex-direction:column;gap:1rem;padding-bottom:1.5rem}
+.chat-msg{display:flex;gap:10px;max-width:90%;animation:fadeIn .4s ease}
+.chat-msg.user{margin-left:auto;flex-direction:row-reverse}
+.chat-bubble{padding:.8rem 1.1rem;border-radius:18px;font-size:.85rem;line-height:1.7;word-break:break-word;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.chat-msg.ai .chat-bubble{background:var(--bg4);border:1.5px solid var(--border);border-bottom-right-radius:4px}
+.chat-msg.user .chat-bubble{background:linear-gradient(135deg,var(--gd),var(--gold));color:#000;border-bottom-left-radius:4px;font-weight:500}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;font-weight:700}
+.chat-msg.ai .chat-avatar{background:var(--bg3);border:1.5px solid var(--border)}
+.chat-msg.user .chat-avatar{background:var(--gold);color:#000}
+.chat-input-wrap{position:fixed;bottom:64px;left:0;right:0;padding:.7rem 1rem;background:rgba(5,5,5,.97);backdrop-filter:blur(24px);border-top:1.5px solid var(--border);display:flex;gap:10px;align-items:center;z-index:90}
+.chat-input-wrap .input{flex:1;background:var(--bg3)}
+.chat-suggestions{display:flex;gap:8px;overflow-x:auto;padding:.5rem 1rem;scrollbar-width:none}
+.chat-suggestions::-webkit-scrollbar{display:none}
+.chat-chip{background:var(--bg3);border:1.5px solid var(--border);color:var(--gl);padding:.4rem .8rem;border-radius:100px;font-size:.7rem;cursor:pointer;transition:all .2s;white-space:nowrap;font-weight:500}
+.chat-chip:hover{border-color:var(--gold);background:var(--accent)}
+
+/* Voice Button */
+.voice-btn{width:44px;height:44px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border);color:var(--gl);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:1.2rem;flex-shrink:0}
+.voice-btn:hover{background:var(--accent);border-color:var(--gold)}
+.voice-btn.recording{animation:recording 1.2s infinite;background:var(--gold);color:#000;border-color:var(--gold)}
+
+/* Study */
+.study-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.study-card:hover{border-color:rgba(201,168,76,.25);transform:translateX(-4px)}
+.study-progress{width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--gold) var(--deg,0deg),var(--bg4) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.study-progress-inner{width:38px;height:38px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+
+/* Reminders */
+.rem-item{display:flex;align-items:center;gap:12px;padding:.7rem 1rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;margin-bottom:.6rem;transition:all .2s}
+.rem-item:hover{border-color:rgba(201,168,76,.2)}
+.rem-time{font-size:.8rem;font-weight:800;color:var(--gold);min-width:50px}
+.rem-text{flex:1;font-size:.85rem;font-weight:500}
+.rem-toggle{width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,.08);position:relative;transition:background .3s;cursor:pointer;flex-shrink:0}
+.rem-toggle.on{background:var(--gold)}
+.rem-toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:white;top:3px;right:3px;transition:transform .3s;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.rem-toggle.on::after{transform:translateX(-18px)}
+
+/* Language Learning */
+.lang-flag{font-size:2rem;margin-bottom:.5rem}
+.lang-card{background:var(--bg3);border:1.5px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:.8rem;cursor:pointer;transition:all .25s;text-align:center}
+.lang-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.lang-card.active{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.lang-name{font-size:1rem;font-weight:700;margin-bottom:.2rem}
+.lang-level{font-size:.7rem;color:var(--text3)}
+
+.lesson-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.lesson-card:hover{border-color:rgba(201,168,76,.25)}
+.lesson-icon{width:44px;height:44px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.lesson-info{flex:1}
+.lesson-title{font-size:.85rem;font-weight:700}
+.lesson-desc{font-size:.7rem;color:var(--text3);margin-top:2px}
+.lesson-status{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.lesson-status.locked{background:var(--bg4);color:var(--text3)}
+.lesson-status.available{background:var(--accent);color:var(--gold);border:1.5px solid var(--gold)}
+.lesson-status.completed{background:var(--success);color:#000}
+
+.vocab-card{background:var(--bg4);border:1.5px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.6rem;transition:all .2s}
+.vocab-word{font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:.3rem}
+.vocab-meaning{font-size:.85rem;color:var(--text2);margin-bottom:.3rem}
+.vocab-example{font-size:.75rem;color:var(--text3);font-style:italic}
+
+.xp-bar{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin:.5rem 0}
+.xp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gl));transition:width .5s ease}
+
+.streak-flame{color:#FF6B35;font-size:1.5rem;animation:pulse 2s infinite}
+
+/* Instagram / Telegram */
+.social-card{background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:.7rem}
+.social-header{display:flex;align-items:center;gap:12px;margin-bottom:.8rem}
+.social-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.ig-icon{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white}
+.tg-icon{background:#2CA5E0;color:white}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:none;align-items:flex-end;justify-content:center;padding:0;padding-bottom:env(safe-area-inset-bottom)}
+.modal.show{display:flex}
+.modal-content{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;animation:slideUp .35s ease;box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+.modal-header{padding:1.2rem;border-bottom:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg2);z-index:10;border-radius:20px 20px 0 0}
+.modal-body{padding:1.2rem}
+.modal-footer{padding:1.2rem;border-top:1.5px solid var(--border);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:var(--bg2)}
+
+/* Toast */
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-30px);background:rgba(10,8,4,.97);border:1.5px solid var(--gold);color:var(--gl);padding:.7rem 1.4rem;border-radius:10px;font-size:.82rem;opacity:0;pointer-events:none;transition:all .35s;z-index:300;box-shadow:0 6px 24px rgba(201,168,76,.25);white-space:nowrap;font-weight:600}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Empty State */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.empty-state .icon{font-size:3.5rem;margin-bottom:1rem;opacity:.6;display:block}
+.empty-state p{font-size:.9rem;font-weight:500}
+.empty-state .sub{font-size:.75rem;margin-top:.5rem;opacity:.7}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Animations for content */
+.content-enter{animation:fadeIn .5s ease both}
+
+/* AI Planning Badge */
+.plan-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(201,168,76,.15);border:1px solid var(--gold);color:var(--gl);padding:2px 8px;border-radius:100px;font-size:.65rem;font-weight:700;margin-right:6px}
+
+/* Quick Actions */
+.quick-actions{display:flex;gap:10px;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:none}
+.quick-actions::-webkit-scrollbar{display:none}
+.quick-action{flex-shrink:0;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:.8rem 1rem;min-width:100px;text-align:center;cursor:pointer;transition:all .2s}
+.quick-action:hover{border-color:var(--gold);transform:translateY(-2px)}
+.quick-action .icon{font-size:1.5rem;margin-bottom:.3rem;display:block}
+.quick-action .label{font-size:.7rem;font-weight:600;color:var(--text2)}
+
+/* Responsive */
+@media(min-width:768px){
+  .app{max-width:480px;margin:0 auto;border-left:1.5px solid var(--border);border-right:1.5px solid var(--border);box-shadow:0 0 60px rgba(0,0,0,.5)}
+  body{background:#0a0a0a}
+}
+
+@media(max-width:380px){
+  .nav-item{font-size:.55rem}
+  .nav-item .icon{font-size:1.2rem}
+  .card{padding:.8rem}
+}
+
+/* Loading skeleton */
+.skeleton{background:linear-gradient(90deg,var(--bg3),var(--bg4),var(--bg3));background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+
+/* Confetti animation for achievements */
+@keyframes confetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(-100vh) rotate(720deg);opacity:0}}
+.confetti{position:fixed;width:10px;height:10px;background:var(--gold);border-radius:2px;animation:confetti 3s ease-out forwards;z-index:500;pointer-events:none}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-title">
+      <span style="font-size:1.4rem">🖤</span>
+      <span class="gs">ZHOVIKA</span>
+    </div>
+    <div class="header-actions">
+      <div class="online-toggle" id="online-toggle" onclick="toggleOnline()">
+        <div class="dot"></div>
+        <span class="txt">آفلاین</span>
+      </div>
+      <button class="btn-icon" onclick="showSettings()">⚙️</button>
+    </div>
+  </div>
+
+  <!-- INSTALL BANNER -->
+  <div class="install-banner" id="install-banner">
+    <span>📱 ZHOVIKA رو روی گوشیت نصب کن!</span>
+    <button onclick="installPWA()">نصب</button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="main-content">
+    <!-- Dynamic content -->
+  </div>
+
+  <!-- CHAT INPUT -->
+  <div class="chat-input-wrap" id="chat-input" style="display:none">
+    <button class="voice-btn" id="voice-btn" onclick="toggleVoice()">🎤</button>
+    <input type="text" class="input" id="chat-text" placeholder="پیام بنویسید..." onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="btn-gold" style="padding:.6rem 1.2rem" onclick="sendChat()">⬆️</button>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home',this)">
+      <span class="icon">🏠</span>
+      <span>خانه</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tasks',this)">
+      <span class="icon">✅</span>
+      <span>وظایف</span>
+      <span class="nav-badge" id="task-badge" style="display:none">0</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('language',this)">
+      <span class="icon">🌍</span>
+      <span>زبان</span>
+      <span class="nav-badge" id="lang-badge" style="display:none">0</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('chat',this)">
+      <span class="icon">🤖</span>
+      <span>AI</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('more',this)">
+      <span class="icon">⋮</span>
+      <span>بیشتر</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-content" id="modal-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ═══════════════════════════════════════════
+// ZHOVIKA v2.0 — Smart Personal Assistant
+// ═══════════════════════════════════════════
+
+// ── Jalaali (Persian) Date Utilities ──
+const Jalaali = {
+  g_days_in_month: [31,28,31,30,31,30,31,31,30,31,30,31],
+  j_days_in_month: [31,31,31,31,31,31,30,30,30,30,30,29],
+
+  // Accurate 33-year break-point algorithm (fixes the ~1-year drift the old
+  // approximation had around Nowruz in certain leap years).
+  _breaks: [-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],
+  _div(a,b){return Math.trunc(a/b);},
+  _mod(a,b){return a-Math.trunc(a/b)*b;},
+  _jalCal(jy){
+    const breaks=this._breaks, bl=breaks.length;
+    const gy=jy+621;
+    let leapJ=-14, jp=breaks[0], jump=0;
+    for(let i=1;i<bl;i++){
+      const jm=breaks[i];
+      jump=jm-jp;
+      if(jy<jm) break;
+      leapJ=leapJ+this._div(jump,33)*8+this._div(this._mod(jump,33),4);
+      jp=jm;
+    }
+    let n=jy-jp;
+    leapJ=leapJ+this._div(n,33)*8+this._div(this._mod(n,33)+3,4);
+    if(this._mod(jump,33)===4 && jump-n===4) leapJ+=1;
+    const leapG=this._div(gy,4)-this._div((this._div(gy,100)+1)*3,4)-150;
+    const march=20+leapJ-leapG;
+    if(jump-n<6) n=n-jump+this._div(jump+4,33)*33;
+    let leap=this._mod(this._mod(n+1,33)-1,4);
+    if(leap===-1) leap=4;
+    return {leap,gy,march};
+  },
+  _g2d(gy,gm,gd){
+    let d=this._div((gy+this._div(gm-8,6)+100100)*1461,4)
+      +this._div(153*this._mod(gm+9,12)+2,5)
+      +gd-34840408;
+    d=d-this._div(this._div(gy+100100+this._div(gm-8,6),100)*3,4)+752;
+    return d;
+  },
+  _d2g(jdn){
+    let j=4*jdn+139361631;
+    j=j+this._div(this._div(4*jdn+183187720,146097)*3,4)*4-3908;
+    const i=this._div(this._mod(j,1461),4)*5+308;
+    const gd=this._div(this._mod(i,153),5)+1;
+    const gm=this._mod(this._div(i,153),12)+1;
+    const gy=this._div(j,1461)-100100+this._div(8-gm,6);
+    return {gy,gm,gd};
+  },
+  _j2d(jy,jm,jd){
+    const r=this._jalCal(jy);
+    return this._g2d(r.gy,3,r.march)+(jm-1)*31-this._div(jm,7)*(jm-7)+jd-1;
+  },
+  _d2j(jdn){
+    const gy=this._d2g(jdn).gy;
+    let jy=gy-621;
+    const r=this._jalCal(jy);
+    const jdn1f=this._g2d(r.gy,3,r.march);
+    let jd,jm,k=jdn-jdn1f;
+    if(k>=0){
+      if(k<=185){jm=1+this._div(k,31);jd=this._mod(k,31)+1;return{jy,jm,jd};}
+      k-=186;
+    }else{
+      jy-=1;k+=179;
+      if(r.leap===1)k+=1;
+    }
+    jm=7+this._div(k,30);
+    jd=this._mod(k,30)+1;
+    return {jy,jm,jd};
+  },
+
+  toJalaali(gy, gm, gd) {
+    return this._d2j(this._g2d(gy, gm, gd));
+  },
+
+  toGregorian(jy, jm, jd) {
+    return this._d2g(this._j2d(jy, jm, jd));
+  },
+
+  now() {
+    const d = new Date();
+    return this.toJalaali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  },
+
+  format(jy, jm, jd, opts={}) {
+    const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+    const days = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+    if(opts.short) return `${jy}/${jm.toString().padStart(2,'0')}/${jd.toString().padStart(2,'0')}`;
+    const g = this.toGregorian(jy, jm, jd);
+    const dayName = days[new Date(g.gy, g.gm - 1, g.gd).getDay()];
+    return `${dayName} ${jd} ${months[jm-1]} ${jy}`;
+  },
+
+  daysInMonth(jy, jm) {
+    if(jm < 1 || jm > 12) return 0;
+    if(jm <= 6) return 31;
+    if(jm <= 11) return 30;
+    return this.isLeap(jy) ? 30 : 29;
+  },
+
+  isLeap(jy) {
+    return this._jalCal(jy).leap === 1;
+  },
+
+  getMonthFirstDay(jy, jm) {
+    // Returns column offset for the Iranian week (0=Saturday ... 6=Friday)
+    const g = this.toGregorian(jy, jm, 1);
+    const d = new Date(g.gy, g.gm - 1, g.gd);
+    return (d.getDay() + 1) % 7;
+  }
+};
+
+// ── IndexedDB Setup ──
+const DB_NAME = 'ZHOVIKA_PA_V2';
+const DB_VERSION = 4;
+let db = null;
+
+function initDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = ()=>reject(req.error);
+    req.onsuccess = ()=>{db=req.result;resolve(db);};
+    req.onupgradeneeded = (e)=>{
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains('tasks')) d.createObjectStore('tasks',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('notes')) d.createObjectStore('notes',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('reminders')) d.createObjectStore('reminders',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('expenses')) d.createObjectStore('expenses',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('exercises')) d.createObjectStore('exercises',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('study')) d.createObjectStore('study',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('chat')) d.createObjectStore('chat',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('settings')) d.createObjectStore('settings',{keyPath:'key'});
+      if(!d.objectStoreNames.contains('events')) d.createObjectStore('events',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('language')) d.createObjectStore('language',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('vocabulary')) d.createObjectStore('vocabulary',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('income')) d.createObjectStore('income',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('debts')) d.createObjectStore('debts',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('timelog')) d.createObjectStore('timelog',{keyPath:'id',autoIncrement:true});
+    };
+  });
+}
+
+function dbPut(store,data){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).put(data).onsuccess=(e)=>res(e.target.result);tx.onerror=()=>rej(tx.error);});}
+function dbGetAll(store){return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const data=[];tx.objectStore(store).openCursor().onsuccess=(e)=>{const c=e.target.result;if(c){data.push(c.value);c.continue();}else res(data);};tx.onerror=()=>rej(tx.error);});}
+function dbDelete(store,id){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(id).onsuccess=res;tx.onerror=()=>rej(tx.error);});}
+function dbGet(store,id){return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');tx.objectStore(store).get(id).onsuccess=(e)=>res(e.target.result);tx.onerror=()=>rej(tx.error);});}
+
+// ── State ──
+let currentTab = 'home';
+let isOnline = false;
+let isRecording = false;
+let recognition = null;
+let currentJMonth = Jalaali.now();
+let selectedJDay = null;
+let userSettings = {name:'',currency:'IRR',theme:'dark',language:'fa'};
+let currentLang = {code:'english',name:'🇺🇸 انگلیسی',level:'A1',xp:0,streak:0};
+let deferredPrompt = null;
+let isPlanning = false;
+let planContext = null;
+
+// ── Toast ──
+function showToast(txt,dur=2800){
+  const t=document.getElementById('toast');
+  t.textContent=txt;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// ── Online Toggle ──
+function toggleOnline(){
+  isOnline=!isOnline;
+  const el=document.getElementById('online-toggle');
+  el.classList.toggle('online',isOnline);
+  el.querySelector('.txt').textContent=isOnline?'آنلاین':'آفلاین';
+  showToast(isOnline?'🌐 حالت آنلاین فعال شد':'🔌 حالت آفلاین');
+  if(isOnline) syncData();
+}
+
+// ── Tab Switching ──
+function switchTab(tab,el){
+  currentTab=tab;
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('chat-input').style.display=tab==='chat'?'flex':'none';
+  renderTab(tab);
+}
+
+function renderTab(tab){
+  const main=document.getElementById('main-content');
+  main.innerHTML='';
+  main.scrollTop=0;
+  switch(tab){
+    case 'home':renderHome(main);break;
+    case 'tasks':renderTasks(main);break;
+    case 'notes':renderNotes(main);break;
+    case 'chat':renderChat(main);break;
+    case 'more':renderMore(main);break;
+    case 'calendar':renderCalendar(main);break;
+    case 'budget':renderBudget(main);break;
+    case 'exercise':renderExercise(main);break;
+    case 'study':renderStudy(main);break;
+    case 'reminders':renderReminders(main);break;
+    case 'social':renderSocial(main);break;
+    case 'language':renderLanguage(main);break;
+  }
+}
+
+// ═══════════════════════════════════════════
+// HOME DASHBOARD
+// ═══════════════════════════════════════════
+async function renderHome(container){
+  const tasks=await dbGetAll('tasks');
+  const notes=await dbGetAll('notes');
+  const reminders=await dbGetAll('reminders');
+  const expenses=await dbGetAll('expenses');
+  const jNow = Jalaali.now();
+  const jDateStr = `${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+  const todayTasks=tasks.filter(t=>!t.done&&t.jDate===jDateStr).length;
+  const totalExp=expenses.reduce((a,e)=>a+(e.amount||0),0);
+  const langData = await dbGetAll('language');
+  const langXP = langData.reduce((a,l)=>a+(l.xp||0),0);
+  const finance=await computeFinance();
+  const timeToday=await getTimeBreakdown(jDateStr);
+
+  container.innerHTML=`
+    <div style="margin-bottom:1.5rem" class="content-enter">
+      <h2 style="font-size:1.15rem;margin-bottom:.3rem;font-weight:800">سلام ${userSettings.name||'دوست عزیز'}! 👋</h2>
+      <p style="color:var(--text3);font-size:.82rem">${Jalaali.format(jNow.jy,jNow.jm,jNow.jd)}</p>
+    </div>
+
+    ${finance.goal?`
+    <div class="card content-enter" style="text-align:center;border-color:rgba(201,168,76,.4);cursor:pointer" onclick="switchTab('budget',null)">
+      <div style="font-size:.72rem;color:var(--text3);font-weight:600">🎯 هدف اصلی · بازه ${finance.goal.years||3} ساله</div>
+      <div style="font-size:1.15rem;font-weight:800;margin:.3rem 0">${escapeHtml(finance.goal.title)}</div>
+      <div class="xp-bar" style="margin:.6rem auto"><div class="xp-fill" style="width:${finance.progressPct}%"></div></div>
+      <div style="font-size:.85rem;color:var(--gl);font-weight:700">${finance.progressPct}٪ پیش رفتی</div>
+      ${finance.monthsRemaining!==null?`<div style="font-size:.7rem;color:${finance.onTrack?'var(--success)':'var(--danger)'};margin-top:.25rem">${finance.onTrack?'✅ طبق برنامه':'⚠️'} حدود ${finance.monthsRemaining} ماه دیگه با این روند</div>`:''}
+    </div>`:`
+    <div class="card content-enter" style="text-align:center">
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:.5rem">🎯 هنوز هدف بلندمدتی نداری</div>
+      <button class="btn-gold" onclick="showGoalModal()">+ تنظیم هدف اصلی</button>
+    </div>`}
+
+    <div class="card content-enter">
+      <div class="card-title">⏱️ مدیریت زمان امروز</div>
+      ${renderTimeBreakdown(timeToday)}
+      <div style="display:flex;gap:6px;margin-top:.7rem;flex-wrap:wrap">
+        <button class="btn-outline" style="flex:1;min-width:70px;font-size:.7rem" onclick="logTime('exercise',30)">+۳۰د ورزش</button>
+        <button class="btn-outline" style="flex:1;min-width:70px;font-size:.7rem" onclick="logTime('study',30)">+۳۰د درس</button>
+        <button class="btn-outline" style="flex:1;min-width:70px;font-size:.7rem" onclick="logTime('work',30)">+۳۰د کار</button>
+        <button class="btn-outline" style="flex:1;min-width:70px;font-size:.7rem" onclick="logTime('idle',30)">+۳۰د بطالت</button>
+      </div>
+    </div>
+
+    <div class="card content-enter" style="background:linear-gradient(135deg,rgba(201,168,76,.08),transparent);border-color:rgba(201,168,76,.2)">
+      <div class="card-title">🤖 برنامه‌ریز</div>
+      <p style="font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:.8rem">یه فرم کوتاه پر کن، خودم برنامه‌ی امروزت رو می‌چینم و به‌عنوان چک‌لیست اضافه می‌کنم — بدون نیاز به تایپ کردن تو چت.</p>
+      <div style="display:flex;gap:8px">
+        <button class="btn-gold" style="flex:1;font-size:.75rem" onclick="showPlanDayModal()">📋 برنامه‌ریزی امروز</button>
+        <button class="btn-outline" style="flex:1;font-size:.75rem" onclick="showMyWorkoutPlan()">🏋️ برنامه ورزشی من</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem" class="content-enter">
+      <div class="card" style="padding:.9rem;text-align:center;cursor:pointer" onclick="switchTab('tasks',null)">
+        <div style="font-size:1.6rem;margin-bottom:.3rem">✅</div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--gold)">${todayTasks}</div>
+        <div style="font-size:.68rem;color:var(--text3);font-weight:500">وظیفه امروز</div>
+      </div>
+      <div class="card" style="padding:.9rem;text-align:center;cursor:pointer" onclick="switchTab('notes',null)">
+        <div style="font-size:1.6rem;margin-bottom:.3rem">📝</div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--gold)">${notes.length}</div>
+        <div style="font-size:.68rem;color:var(--text3);font-weight:500">یادداشت</div>
+      </div>
+      <div class="card" style="padding:.9rem;text-align:center;cursor:pointer" onclick="switchTab('language',null)">
+        <div style="font-size:1.6rem;margin-bottom:.3rem">🌍</div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--gold)">${langXP}</div>
+        <div style="font-size:.68rem;color:var(--text3);font-weight:500">امتیاز زبان</div>
+      </div>
+      <div class="card" style="padding:.9rem;text-align:center;cursor:pointer" onclick="switchTab('budget',null)">
+        <div style="font-size:1.6rem;margin-bottom:.3rem">💰</div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--gold)">${totalExp.toLocaleString('fa-IR')}</div>
+        <div style="font-size:.68rem;color:var(--text3);font-weight:500">هزینه‌ها</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" style="margin-bottom:1rem">
+      <div class="quick-action" onclick="showAddTaskModal()">
+        <span class="icon">✅</span>
+        <span class="label">وظیفه</span>
+      </div>
+      <div class="quick-action" onclick="showNoteModal()">
+        <span class="icon">📝</span>
+        <span class="label">یادداشت</span>
+      </div>
+      <div class="quick-action" onclick="switchTab('chat',document.querySelectorAll('.nav-item')[3]);document.querySelectorAll('.nav-item')[3].classList.add('active');document.querySelectorAll('.nav-item')[0].classList.remove('active')">
+        <span class="icon">🤖</span>
+        <span class="label">دستیار</span>
+      </div>
+      <div class="quick-action" onclick="switchTab('language',document.querySelectorAll('.nav-item')[2]);document.querySelectorAll('.nav-item')[2].classList.add('active');document.querySelectorAll('.nav-item')[0].classList.remove('active')">
+        <span class="icon">🌍</span>
+        <span class="label">زبان</span>
+      </div>
+    </div>
+
+    <!-- Mini Calendar -->
+    <div class="card content-enter" style="cursor:pointer" onclick="switchTab('calendar',null)">
+      <div class="card-title">📅 تقویم شمسی</div>
+      ${renderMiniCalendar(jNow.jy,jNow.jm)}
+    </div>
+
+    <!-- Today's Tasks -->
+    <div class="card content-enter">
+      <div class="card-title">✅ وظایف امروز <span style="font-size:.7rem;color:var(--text3)">(${jNow.jd} ${['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'][jNow.jm-1]})</span></div>
+      ${todayTasks===0?'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2.5rem">🎉</span><p>امروز همه کارها انجام شده!</p></div>':
+        tasks.filter(t=>!t.done&&t.jDate===jDateStr).map(t=>`
+          <div class="task-item" onclick="toggleTask(${t.id})">
+            <div class="task-priority ${t.priority||'medium'}"></div>
+            <div class="task-check">${t.done?'✓':''}</div>
+            <div class="task-text ${t.done?'completed':''}">${t.text}</div>
+            <span class="task-delete" onclick="event.stopPropagation();deleteTask(${t.id})">🗑️</span>
+          </div>
+        `).join('')}
+      <button class="btn-outline" style="width:100%;margin-top:.5rem" onclick="showAddTaskModal()">+ افزودن وظیفه</button>
+    </div>
+
+    <div class="card content-enter">
+      <div class="card-title">💰 خلاصه بودجه</div>
+      ${renderBudgetSummary(expenses)}
+    </div>
+  `;
+}
+
+function renderMiniCalendar(jy,jm){
+  const firstDay = Jalaali.getMonthFirstDay(jy,jm);
+  const daysInMonth = Jalaali.daysInMonth(jy,jm);
+  const jNow = Jalaali.now();
+  const isCurrentMonth = jy===jNow.jy && jm===jNow.jm;
+  const days = ['ش','ی','د','س','چ','پ','ج'];
+  let html='<div class="cal-grid">';
+  days.forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
+  for(let i=0;i<firstDay;i++)html+='<div class="cal-day other-month"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday = isCurrentMonth && d===jNow.jd;
+    const isFriday = (firstDay+d-1)%7===6;
+    html+=`<div class="cal-day ${isToday?'today':''} ${isFriday?'friday':''}">${d}</div>`;
+  }
+  html+='</div>';
+  return html;
+}
+
+function renderBudgetSummary(expenses){
+  const cats={'food':'🍔 غذا','transport':'🚗 حمل‌ونقل','shopping':'🛍️ خرید','bills':'💡 قبوض','other':'📦 سایر'};
+  const byCat={};
+  expenses.forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+(e.amount||0);});
+  const total=Object.values(byCat).reduce((a,b)=>a+b,0);
+  if(total===0)return'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2.5rem">💰</span><p>هنوز هزینه‌ای ثبت نشده</p></div>';
+  let html='';
+  Object.entries(byCat).forEach(([cat,amount])=>{
+    const pct=(amount/total*100).toFixed(0);
+    html+=`<div class="budget-row"><span style="font-size:.82rem;font-weight:500">${cats[cat]||cat}</span><span style="font-size:.82rem;color:var(--gl);font-weight:700">${amount.toLocaleString('fa-IR')}</span></div>`;
+    html+=`<div class="budget-bar"><div class="budget-fill" style="width:${pct}%"></div></div>`;
+  });
+  return html;
+}
+
+// ═══════════════════════════════════════════
+// TIME MANAGEMENT
+// ═══════════════════════════════════════════
+const TIME_CATS={exercise:{label:'ورزش',icon:'💪',color:'#4caf50'},study:{label:'مطالعه',icon:'📚',color:'#2196f3'},work:{label:'کار',icon:'💼',color:'#c9a84c'},idle:{label:'بطالت',icon:'😴',color:'#666'}};
+
+async function getTimeBreakdown(jDateStr){
+  const logs=(await dbGetAll('timelog')).filter(l=>l.jDate===jDateStr);
+  const exercises=(await dbGetAll('exercises')).filter(e=>e.jDate===jDateStr);
+  const totals={exercise:0,study:0,work:0,idle:0};
+  for(const l of logs) if(totals[l.activity]!==undefined) totals[l.activity]+=(l.minutes||0);
+  for(const e of exercises) totals.exercise+=(e.duration||0); // auto-count logged workouts too
+  return totals;
+}
+
+function renderTimeBreakdown(totals){
+  const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  if(total===0) return '<div style="font-size:.78rem;color:var(--text3);text-align:center;padding:.5rem 0">هنوز چیزی برای امروز ثبت نکردی</div>';
+  return `
+    <div style="display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:.6rem">
+      ${Object.entries(totals).map(([k,v])=>v>0?`<div style="width:${(v/total*100)}%;background:${TIME_CATS[k].color}"></div>`:'').join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      ${Object.entries(totals).map(([k,v])=>`
+        <div style="font-size:.72rem;color:var(--text2);display:flex;justify-content:space-between">
+          <span>${TIME_CATS[k].icon} ${TIME_CATS[k].label}</span>
+          <span style="font-weight:700">${Math.round(v/60*10)/10} ساعت</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function logTime(activity,minutes){
+  const jNow=Jalaali.now();
+  await dbPut('timelog',{activity,minutes,jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,created:Date.now()});
+  showToast(`⏱️ ${minutes} دقیقه ${TIME_CATS[activity].label} ثبت شد`);
+  renderTab('home');
+}
+
+// ═══════════════════════════════════════════
+// STRUCTURED (FORM-BASED, NOT CHAT-PARSED) PLANNERS
+// These are deterministic — they don't depend on the assistant correctly
+// understanding free-form text, so they always work.
+// ═══════════════════════════════════════════
+function showPlanDayModal(){
+  showModal('📋 برنامه‌ریزی امروز',`
+    <p style="font-size:.8rem;color:var(--text2);margin-bottom:.6rem">هر کار رو یه خط بنویس. اولویت بالا رو با ! در اول خط مشخص کن (مثلاً: !تماس با مشتری).</p>
+    <textarea class="input" id="plan-day-text" rows="6" placeholder="خرید نان&#10;!تماس با مشتری&#10;تمرین ورزش&#10;مطالعه ۱ ساعت"></textarea>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'✅ بساز و اضافه کن',action:async()=>{
+      const raw=document.getElementById('plan-day-text').value;
+      const lines=raw.split('\n').map(s=>s.trim()).filter(Boolean);
+      if(lines.length===0){showToast('❌ حداقل یه کار بنویس');return;}
+      const jNow=Jalaali.now();
+      const jDateStr=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+      for(const line of lines){
+        const isHigh=line.startsWith('!');
+        const text=isHigh?line.slice(1).trim():line;
+        await dbPut('tasks',{text,done:false,jDate:jDateStr,priority:isHigh?'high':'medium',created:Date.now()});
+      }
+      closeModal();showToast(`✅ ${lines.length} کار به چک‌لیست امروز اضافه شد`);renderTab('home');
+    }}
+  ]);
+}
+
+function showWorkoutFormModal(){
+  showModal('💪 برنامه ورزشی شخصی',`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.6rem">
+      <input type="number" class="input" id="wf-weight" placeholder="وزن (کیلو)"/>
+      <input type="number" class="input" id="wf-height" placeholder="قد (سانت)"/>
+    </div>
+    <select class="input" id="wf-level" style="margin-bottom:.6rem">
+      <option value="beginner">مبتدی</option>
+      <option value="intermediate">متوسط</option>
+      <option value="advanced">پیشرفته</option>
+    </select>
+    <select class="input" id="wf-goal">
+      <option value="تناسب اندام">تناسب اندام</option>
+      <option value="کاهش وزن">کاهش وزن</option>
+      <option value="عضله‌سازی">عضله‌سازی</option>
+    </select>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'✅ بساز و اضافه کن',action:async()=>{
+      const weight=parseInt(document.getElementById('wf-weight').value)||70;
+      const height=parseInt(document.getElementById('wf-height').value)||175;
+      const level=document.getElementById('wf-level').value;
+      const goal=document.getElementById('wf-goal').value;
+      const bmi=(weight/((height/100)**2)).toFixed(1);
+      const exercises=buildWorkoutExercises(level);
+      const jNow=Jalaali.now();
+      const jDateStr=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+      for(const ex of exercises){
+        await dbPut('exercises',{name:ex.name,duration:ex.duration,calories:ex.calories||0,sets:ex.sets||null,type:ex.sets?'strength':'cardio',jDate:jDateStr,created:Date.now()});
+      }
+      const label=`💪 تمرین امروز: ${exercises[0].name} + ${exercises.length-1} تمرین دیگر (BMI ${bmi})`;
+      await dbPut('tasks',{text:label,done:false,jDate:jDateStr,priority:'high',created:Date.now()});
+      await addSimpleReminder(label,8,0,'once');
+      closeModal();showToast('✅ برنامه ورزشی اضافه شد');renderTab('home');
+    }}
+  ]);
+}
+
+// ═══════════════════════════════════════════
+// PERSONAL WORKOUT PLAN
+// Built for: 85kg / 180cm / 21yo / fat loss + muscle gain / 3x per week / one dumbbell.
+// Full-body, non-consecutive days (e.g. Sat-Mon-Wed). Review & adjust monthly.
+// ═══════════════════════════════════════════
+const PERSONAL_WORKOUT_PLAN={
+  meta:{weight:85,height:180,age:21,goal:'کاهش چربی + عضله‌سازی (رکامپوزیشن)',daysPerWeek:3,equipment:'یک دمبل',bmi:26.2,version:'v1 — مرداد ۱۴۰۵'},
+  warmup:{name:'گرم کردن (طناب نامرئی / جای خود دویدن)',duration:5,calories:40},
+  exercises:[
+    {name:'اسکوات گابلت با دمبل',duration:8,calories:50,sets:'۴×۱۲',note:'دمبل رو جلوی سینه نگه دار، زانو از نوک پا جلوتر نره'},
+    {name:'رو با یک دست (تک دمبل، خم به جلو)',duration:8,calories:45,sets:'۴×۱۰ هر دست',note:'پشت صاف، آرنج نزدیک بدن'},
+    {name:'شنا سوئدی',duration:6,calories:35,sets:'۳×۱۲-۱۵'},
+    {name:'پرس سرشانه تک دمبل (ایستاده)',duration:6,calories:30,sets:'۳×۱۰ هر دست'},
+    {name:'ددلیفت رومانیایی تک دمبل',duration:6,calories:35,sets:'۳×۱۲',note:'زانو کمی خم، از باسن تا کنی نه کمر'},
+    {name:'لانج پیاده با دمبل',duration:7,calories:45,sets:'۳×۱۲ هر پا'},
+    {name:'پلانک + چرخش روسی با دمبل',duration:6,calories:25,sets:'۳×۴۰ ثانیه پلانک + ۳×۱۵ چرخش'}
+  ],
+  cardio:{name:'کاردیوی پایانی (طناب یا پیاده‌روی تند)',duration:12,calories:110}
+};
+
+async function showMyWorkoutPlan(){
+  const p=PERSONAL_WORKOUT_PLAN;
+  const totalMin=p.warmup.duration+p.exercises.reduce((a,e)=>a+e.duration,0)+p.cardio.duration;
+  const totalCal=p.warmup.calories+p.exercises.reduce((a,e)=>a+e.calories,0)+p.cardio.calories;
+  showModal('🏋️ برنامه ورزشی شخصی من',`
+    <p style="font-size:.75rem;color:var(--text3);margin-bottom:.7rem">${p.meta.goal} · ${p.meta.daysPerWeek} روز در هفته (مثلاً شنبه-دوشنبه-چهارشنبه) · ${p.meta.equipment} · BMI فعلی ${p.meta.bmi} · ${p.meta.version}</p>
+    <div class="card" style="margin:0 0 .5rem 0;padding:.6rem"><b>${p.warmup.name}</b><div style="font-size:.7rem;color:var(--text3)">${p.warmup.duration} دقیقه</div></div>
+    ${p.exercises.map(e=>`
+      <div class="card" style="margin:0 0 .5rem 0;padding:.6rem">
+        <b>${e.name}</b>
+        <div style="font-size:.7rem;color:var(--text3)">${e.sets} · ${e.duration} دقیقه</div>
+        ${e.note?`<div style="font-size:.68rem;color:var(--gl);margin-top:.2rem">💡 ${e.note}</div>`:''}
+      </div>
+    `).join('')}
+    <div class="card" style="margin:0 0 .5rem 0;padding:.6rem"><b>${p.cardio.name}</b><div style="font-size:.7rem;color:var(--text3)">${p.cardio.duration} دقیقه</div></div>
+    <p style="font-size:.75rem;color:var(--text2);margin-top:.6rem">⏱️ کل جلسه: حدود ${totalMin} دقیقه · 🔥 حدود ${totalCal} کالری</p>
+    <p style="font-size:.7rem;color:var(--text3);margin-top:.4rem">هر ماه که وزن/دورت تغییر کرد، بگو تا نسخه‌ی بعدی رو باهات تنظیم کنم (تعداد ست/تکرار رو بالا می‌بریم).</p>
+  `,[
+    {text:'بستن',action:closeModal,outline:true},
+    {text:'✅ ثبت تمرین امروز',action:async()=>{
+      const jNow=Jalaali.now();
+      const jDateStr=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+      for(const ex of PERSONAL_WORKOUT_PLAN.exercises){
+        await dbPut('exercises',{name:ex.name,duration:ex.duration,calories:ex.calories,sets:ex.sets,type:'strength',jDate:jDateStr,created:Date.now()});
+      }
+      await dbPut('exercises',{name:PERSONAL_WORKOUT_PLAN.cardio.name,duration:PERSONAL_WORKOUT_PLAN.cardio.duration,calories:PERSONAL_WORKOUT_PLAN.cardio.calories,type:'cardio',jDate:jDateStr,created:Date.now()});
+      await dbPut('tasks',{text:'🏋️ تمرین کامل برنامه شخصی (فول‌بادی + کاردیو)',done:false,jDate:jDateStr,priority:'high',created:Date.now()});
+      closeModal();showToast('✅ تمرین امروز ثبت شد — آفرین!');renderTab('home');
+    }}
+  ]);
+}
+
+function buildWorkoutExercises(level){
+  if(level==='beginner') return [
+    {name:'پیاده‌روی سریع',duration:30,calories:150},
+    {name:'اسکوات',duration:10,calories:50,sets:'۳×۱۰'},
+    {name:'شنا',duration:8,calories:40,sets:'۳×۵'},
+    {name:'پلانک',duration:5,calories:20,sets:'۳×۲۰ ثانیه'}
+  ];
+  if(level==='intermediate') return [
+    {name:'دویدن آهسته',duration:30,calories:300},
+    {name:'اسکوات با دمبل',duration:15,calories:100,sets:'۴×۱۲'},
+    {name:'شنا',duration:10,calories:60,sets:'۳×۱۵'},
+    {name:'لانگ',duration:10,calories:80,sets:'۳×۱۲'},
+    {name:'پلانک',duration:5,calories:30,sets:'۳×۴۵ ثانیه'}
+  ];
+  return [
+    {name:'دویدن تناوبی',duration:30,calories:400},
+    {name:'اسکوات پرشی',duration:15,calories:150,sets:'۴×۱۵'},
+    {name:'شنا الماس',duration:10,calories:100,sets:'۴×۱۲'},
+    {name:'بورپی',duration:10,calories:150,sets:'۳×۱۰'}
+  ];
+}
+
+async function quickPlan(type){
+  if(type==='workout'){
+    showModal('💪 برنامه ورزشی سریع',`
+      <p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">برنامه ۱۵ دقیقه‌ای بدون وسایل:</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="margin:0;padding:.7rem"><div style="font-weight:600">🏃 دویدن جا‌به‌جا</div><div style="font-size:.7rem;color:var(--text3)">۳ دقیقه · گرم کردن</div></div>
+        <div class="card" style="margin:0;padding:.7rem"><div style="font-weight:600">🦵 اسکوات</div><div style="font-size:.7rem;color:var(--text3)">۳ ست × ۱۵ · ۵ دقیقه</div></div>
+        <div class="card" style="margin:0;padding:.7rem"><div style="font-weight:600">💪 شنا</div><div style="font-size:.7rem;color:var(--text3)">۳ ست × ۱۰ · ۴ دقیقه</div></div>
+        <div class="card" style="margin:0;padding:.7rem"><div style="font-weight:600">🧘 پلانک</div><div style="font-size:.7rem;color:var(--text3)">۳ ست × ۳۰ ثانیه · ۳ دقیقه</div></div>
+      </div>
+    `,[
+      {text:'❌ بستن',action:closeModal,outline:true},
+      {text:'✅ اضافه به وظایف',action:async()=>{
+        const jNow=Jalaali.now();
+        await dbPut('tasks',{text:'💪 تمرین ورزش: اسکوات + شنا + پلانک',done:false,jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,priority:'high',created:Date.now()});
+        await dbPut('exercises',{name:'اسکوات',duration:5,calories:40,type:'strength',jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,created:Date.now()});
+        closeModal();showToast('✅ برنامه ورزش اضافه شد');renderTab('home');
+      }}
+    ]);
+  }else if(type==='language'){
+    switchTab('language',document.querySelectorAll('.nav-item')[2]);
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.nav-item')[2].classList.add('active');
+  }
+}
+
+// ═══════════════════════════════════════════
+// TASKS
+// ═══════════════════════════════════════════
+async function renderTasks(container){
+  const tasks=await dbGetAll('tasks');
+  const pending=tasks.filter(t=>!t.done);
+  const done=tasks.filter(t=>t.done);
+  document.getElementById('task-badge').style.display=pending.length?'block':'none';
+  document.getElementById('task-badge').textContent=pending.length;
+
+  container.innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:1rem" class="content-enter">
+      <button class="btn-gold" style="flex:1" onclick="showAddTaskModal()">+ وظیفه جدید</button>
+      <button class="btn-outline" style="padding:.6rem" onclick="showTaskFilter()">🔍</button>
+    </div>
+    <div class="card content-enter">
+      <div class="card-title">⏳ در انتظار (${pending.length})</div>
+      ${pending.length===0?'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2.5rem">🎉</span><p>همه کارها انجام شده!</p></div>':
+        pending.map(t=>`
+          <div class="task-item" onclick="toggleTask(${t.id})">
+            <div class="task-priority ${t.priority||'medium'}"></div>
+            <div class="task-check"></div>
+            <div class="task-text">${t.text}</div>
+            ${t.jDate?`<span style="font-size:.65rem;color:var(--text3);margin-left:8px">${t.jDate}</span>`:''}
+            <span class="task-delete" onclick="event.stopPropagation();deleteTask(${t.id})">🗑️</span>
+          </div>
+        `).join('')}
+    </div>
+    ${done.length?`<div class="card content-enter"><div class="card-title">✓ انجام شده (${done.length})</div>${done.map(t=>`
+      <div class="task-item completed" onclick="toggleTask(${t.id})">
+        <div class="task-priority ${t.priority||'medium'}"></div>
+        <div class="task-check">✓</div>
+        <div class="task-text completed">${t.text}</div>
+        <span class="task-delete" onclick="event.stopPropagation();deleteTask(${t.id})">🗑️</span>
+      </div>
+    `).join('')}</div>`:''}
+  `;
+}
+
+function showAddTaskModal(){
+  const jNow=Jalaali.now();
+  showModal('✅ وظیفه جدید',`
+    <input type="text" class="input" id="task-input" placeholder="چه کاری باید انجام بدی؟" style="margin-bottom:.6rem"/>
+    <input type="text" class="input" id="task-jdate" value="${jNow.jy}/${jNow.jm}/${jNow.jd}" placeholder="تاریخ شمسی: 1403/5/15" style="margin-bottom:.6rem"/>
+    <select class="input" id="task-priority" style="margin-bottom:.6rem">
+      <option value="low">🔵 اولویت پایین</option>
+      <option value="medium" selected>🟡 اولویت متوسط</option>
+      <option value="high">🔴 اولویت بالا</option>
+    </select>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'✅ ذخیره',action:async()=>{
+      const text=document.getElementById('task-input').value.trim();
+      const jDate=document.getElementById('task-jdate').value.trim();
+      const priority=document.getElementById('task-priority').value;
+      if(!text){showToast('❌ متن وظیفه را بنویسید');return;}
+      await dbPut('tasks',{text,done:false,jDate,priority,created:Date.now()});
+      closeModal();showToast('✅ وظیفه اضافه شد');renderTab('tasks');
+    }}
+  ]);
+  setTimeout(()=>document.getElementById('task-input').focus(),100);
+}
+
+async function toggleTask(id){
+  const tx=db.transaction('tasks','readwrite');
+  const store=tx.objectStore('tasks');
+  const req=store.get(id);
+  req.onsuccess=async()=>{const t=req.result;t.done=!t.done;await dbPut('tasks',t);renderTab('tasks');};
+}
+async function deleteTask(id){await dbDelete('tasks',id);renderTab('tasks');showToast('🗑️ حذف شد');}
+
+// ═══════════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════════
+async function renderNotes(container){
+  const notes=await dbGetAll('notes');
+  notes.sort((a,b)=>(b.updated||0)-(a.updated||0));
+  container.innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:1rem" class="content-enter">
+      <button class="btn-gold" style="flex:1" onclick="showNoteModal()">+ یادداشت جدید</button>
+    </div>
+    ${notes.length===0?'<div class="empty-state"><span class="icon">📝</span><p>هنوز یادداشتی ندارید</p><div class="sub">روی دکمه بالا بزنید تا اولین یادداشت رو بسازید</div></div>':
+      notes.map(n=>`
+        <div class="note-card" onclick="showNoteModal(${n.id})">
+          <div class="note-title">${n.title||'بدون عنوان'}</div>
+          <div class="note-preview">${n.content||''}</div>
+          <div class="note-date">${n.jDate||new Date(n.updated).toLocaleDateString('fa-IR')}</div>
+        </div>
+      `).join('')}
+  `;
+}
+
+async function showNoteModal(id=null){
+  let note={title:'',content:'',id:null};
+  if(id){
+    const n=await dbGet('notes',id);
+    if(n) note=n;
+  }
+  const jNow=Jalaali.now();
+  showModal(id?'📝 ویرایش یادداشت':'📝 یادداشت جدید',`
+    <input type="text" class="input" id="note-title" placeholder="عنوان..." value="${note.title||''}" style="margin-bottom:.6rem"/>
+    <textarea class="input" id="note-content" placeholder="متن یادداشت...">${note.content||''}</textarea>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    ...(id?[{text:'🗑️ حذف',action:async()=>{await dbDelete('notes',id);closeModal();showToast('حذف شد');renderTab('notes');},outline:true}]:[]),
+    {text:'💾 ذخیره',action:async()=>{
+      const title=document.getElementById('note-title').value;
+      const content=document.getElementById('note-content').value;
+      await dbPut('notes',{id:note.id,title,content,jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,updated:Date.now()});
+      closeModal();showToast('💾 ذخیره شد');renderTab('notes');
+    }}
+  ]);
+}
+
+// ═══════════════════════════════════════════
+// PERSIAN CALENDAR WITH EVENTS
+// ═══════════════════════════════════════════
+async function renderCalendar(container){
+  const jy=currentJMonth.jy, jm=currentJMonth.jm;
+  const firstDay=Jalaali.getMonthFirstDay(jy,jm);
+  const daysInMonth=Jalaali.daysInMonth(jy,jm);
+  const jNow=Jalaali.now();
+  const isCurrentMonth=jy===jNow.jy&&jm===jNow.jm;
+  const monthNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const days=['ش','ی','د','س','چ','پ','ج'];
+
+  // Get events and tasks for this month
+  const events=await dbGetAll('events');
+  const tasks=await dbGetAll('tasks');
+
+  container.innerHTML=`
+    <div class="cal-container content-enter">
+      <div class="cal-header-row">
+        <button class="cal-nav-btn" onclick="changeJMonth(-1)">◀</button>
+        <div class="cal-title">${monthNames[jm-1]} ${jy}</div>
+        <button class="cal-nav-btn" onclick="changeJMonth(1)">▶</button>
+      </div>
+      <div class="cal-grid">
+        ${days.map(d=>`<div class="cal-day-header">${d}</div>`).join('')}
+        ${Array(firstDay).fill('<div class="cal-day other-month"></div>').join('')}
+        ${Array(daysInMonth).fill(0).map((_,i)=>{
+          const d=i+1;
+          const isToday=isCurrentMonth&&d===jNow.jd;
+          const isFriday=(firstDay+d-1)%7===6;
+          const jDateStr=`${jy}/${jm}/${d}`;
+          const hasEvent=events.some(e=>e.jDate===jDateStr);
+          const hasTask=tasks.some(t=>t.jDate===jDateStr&&!t.done);
+          const isSelected=selectedJDay&&selectedJDay.jy===jy&&selectedJDay.jm===jm&&selectedJDay.jd===d;
+          return `<div class="cal-day ${isToday?'today':''} ${isFriday?'friday':''} ${hasEvent?'has-event':''} ${hasTask?'has-task':''} ${isSelected?'selected':''}" 
+            onclick="selectJDay(${jy},${jm},${d})">${d}</div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    ${selectedJDay?`<div class="day-panel content-enter" id="day-panel">
+      <div class="day-panel-title">
+        <span>📅 ${selectedJDay.jd} ${monthNames[selectedJDay.jm-1]} ${selectedJDay.jy}</span>
+        <button class="btn-icon" style="width:32px;height:32px;font-size:.8rem" onclick="selectedJDay=null;renderTab('calendar')">✕</button>
+      </div>
+      <div id="day-events-content"></div>
+    </div>`:''}
+
+    <button class="btn-gold" style="width:100%;margin-top:.5rem" onclick="showAddEventModal()">+ رویداد جدید</button>
+  `;
+
+  if(selectedJDay){
+    renderDayEvents(selectedJDay.jy,selectedJDay.jm,selectedJDay.jd);
+  }
+}
+
+async function renderDayEvents(jy,jm,jd){
+  const jDateStr=`${jy}/${jm}/${jd}`;
+  const events=await dbGetAll('events');
+  const tasks=await dbGetAll('tasks');
+  const dayEvents=events.filter(e=>e.jDate===jDateStr);
+  const dayTasks=tasks.filter(t=>t.jDate===jDateStr);
+
+  const container=document.getElementById('day-events-content');
+  if(!container) return;
+
+  let html='';
+  if(dayEvents.length===0&&dayTasks.length===0){
+    html='<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2rem">📅</span><p>هیچ رویدادی نیست</p></div>';
+  }else{
+    if(dayEvents.length){
+      html+='<div style="margin-bottom:.8rem"><div style="font-size:.75rem;color:var(--text3);margin-bottom:.4rem">📋 رویدادها</div>';
+      dayEvents.forEach(e=>{
+        html+=`<div class="card" style="margin:0 0 .5rem 0;padding:.7rem"><div style="font-weight:600;font-size:.85rem">${e.title}</div><div style="font-size:.7rem;color:var(--text3)">${e.time||''} · ${e.type==='personal'?'👤 شخصی':e.type==='work'?'💼 کاری':e.type==='study'?'📚 درسی':'💪 سلامتی'}</div></div>`;
+      });
+      html+='</div>';
+    }
+    if(dayTasks.length){
+      html+='<div><div style="font-size:.75rem;color:var(--text3);margin-bottom:.4rem">✅ وظایف</div>';
+      dayTasks.forEach(t=>{
+        html+=`<div class="task-item" style="margin-bottom:.4rem" onclick="toggleTask(${t.id})"><div class="task-check">${t.done?'✓':''}</div><div class="task-text ${t.done?'completed':''}">${t.text}</div></div>`;
+      });
+      html+='</div>';
+    }
+  }
+  container.innerHTML=html;
+}
+
+function selectJDay(jy,jm,jd){
+  selectedJDay={jy,jm,jd};
+  renderTab('calendar');
+}
+
+function changeJMonth(delta){
+  let newJm=currentJMonth.jm+delta;
+  let newJy=currentJMonth.jy;
+  if(newJm>12){newJm=1;newJy++;}
+  if(newJm<1){newJm=12;newJy--;}
+  currentJMonth={jy:newJy,jm:newJm};
+  renderTab('calendar');
+}
+
+function showAddEventModal(){
+  const jNow=Jalaali.now();
+  const sel=selectedJDay||jNow;
+  showModal('📅 رویداد جدید',`
+    <input type="text" class="input" id="event-title" placeholder="عنوان رویداد..." style="margin-bottom:.6rem"/>
+    <input type="text" class="input" id="event-jdate" value="${sel.jy}/${sel.jm}/${sel.jd}" placeholder="تاریخ شمسی" style="margin-bottom:.6rem"/>
+    <input type="time" class="input" id="event-time" style="margin-bottom:.6rem"/>
+    <select class="input" id="event-type">
+      <option value="personal">👤 شخصی</option>
+      <option value="work">💼 کاری</option>
+      <option value="study">📚 درسی</option>
+      <option value="health">💪 سلامتی</option>
+    </select>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'✅ ذخیره',action:async()=>{
+      const title=document.getElementById('event-title').value;
+      const jDate=document.getElementById('event-jdate').value;
+      const time=document.getElementById('event-time').value;
+      const type=document.getElementById('event-type').value;
+      if(!title||!jDate){showToast('❌ لطفاً عنوان و تاریخ را وارد کنید');return;}
+      await dbPut('events',{title,jDate,time,type,created:Date.now()});
+      closeModal();showToast('📅 رویداد ذخیره شد');
+      selectedJDay=null;
+      renderTab('calendar');
+    }}
+  ]);
+}
+
+// ═══════════════════════════════════════════
+// SMART AI CHAT WITH PLANNING
+// ═══════════════════════════════════════════
+function renderPendingActionCard(msgId, action, index, resolved){
+  const labels={task:'✅ وظیفه جدید',workout:'💪 برنامه ورزشی',study:'📚 برنامه مطالعاتی',language:'🌍 درس زبان',placement_test:'🎯 آزمون تعیین سطح'};
+  if(action.type==='placement_test'){
+    if(resolved==='confirmed') return `<div class="card" style="margin:.5rem 0 0 0;padding:.6rem;font-size:.78rem;color:var(--gl)">✅ نتیجه آزمون ثبت شد</div>`;
+    const qs=action.payload.questions||[];
+    return `
+      <div class="card" style="margin:.5rem 0 0 0;padding:.7rem;border-color:rgba(201,168,76,.3)" id="quiz-${msgId}-${index}">
+        <div style="font-weight:700;font-size:.82rem;margin-bottom:.6rem">🎯 آزمون تعیین سطح ${action.payload.language||''}</div>
+        ${qs.map((q,qi)=>`
+          <div style="margin-bottom:.7rem">
+            <div style="font-size:.8rem;font-weight:600;margin-bottom:.3rem">${qi+1}. ${escapeHtml(q.q)}</div>
+            ${(q.options||[]).map(opt=>`
+              <label style="display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--text2);margin-bottom:.2rem;cursor:pointer">
+                <input type="radio" name="quiz-${msgId}-${index}-${qi}" value="${escapeHtml(opt)}"/> ${escapeHtml(opt)}
+              </label>
+            `).join('')}
+          </div>
+        `).join('')}
+        <button class="btn-gold" style="width:100%;font-size:.78rem" onclick="submitPlacementTest(${msgId},${index})">✅ ثبت پاسخ‌ها</button>
+      </div>`;
+  }
+  if(resolved==='confirmed') return `<div class="card" style="margin:.5rem 0 0 0;padding:.6rem;font-size:.78rem;color:var(--gl)">✅ ${labels[action.type]||'پیشنهاد'} اضافه شد</div>`;
+  if(resolved==='rejected') return `<div class="card" style="margin:.5rem 0 0 0;padding:.6rem;font-size:.78rem;color:var(--text3)">❌ رد شد</div>`;
+  return `
+    <div class="card" style="margin:.5rem 0 0 0;padding:.7rem;border-color:rgba(201,168,76,.3)">
+      <div style="font-weight:700;font-size:.82rem;margin-bottom:.4rem">${labels[action.type]||'پیشنهاد'}</div>
+      <div style="font-size:.75rem;color:var(--text2);white-space:pre-line;margin-bottom:.6rem">${escapeHtml(summarizeAction(action))}</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-gold" style="flex:1;font-size:.75rem" onclick="confirmPendingAction(${msgId},${index})">✅ تایید و افزودن</button>
+        <button class="btn-outline" style="flex:1;font-size:.75rem" onclick="rejectPendingAction(${msgId},${index})">❌ رد</button>
+      </div>
+    </div>`;
+}
+
+async function submitPlacementTest(msgId,index){
+  const msg=await dbGet('chat',msgId);
+  if(!msg||!msg.pending_actions||!msg.pending_actions[index])return;
+  const action=msg.pending_actions[index];
+  const qs=action.payload.questions||[];
+  let correct=0;
+  const details=[];
+  qs.forEach((q,qi)=>{
+    const sel=document.querySelector(`input[name="quiz-${msgId}-${index}-${qi}"]:checked`);
+    const chosen=sel?sel.value:null;
+    const isRight=chosen&&chosen===q.answer;
+    if(isRight)correct++;
+    details.push(`${qi+1}. ${isRight?'✅':'❌'} (${q.difficulty})`);
+  });
+
+  msg.resolved=msg.resolved||{};
+  msg.resolved[index]='confirmed';
+  await dbPut('chat',msg);
+  renderTab('chat');
+
+  const pct=Math.round((correct/(qs.length||1))*100);
+  const summary=`نتیجه آزمون تعیین سطح ${action.payload.language}: ${correct} از ${qs.length} سوال درست (${pct}٪).\n${details.join('\n')}`;
+  await sendChat(summary);
+}
+
+async function sendChat(forcedText){
+  const input=document.getElementById('chat-text');
+  const text=(forcedText!==undefined?forcedText:input.value.trim());
+  if(!text)return;
+  if(forcedText===undefined) input.value='';
+
+  await dbPut('chat',{role:'user',text,time:Date.now()});
+  await renderChat(document.getElementById('main-content'));
+
+  isPlanning=true;
+  await renderChat(document.getElementById('main-content'));
+
+  const reply=await processAIChat(text);
+
+  isPlanning=false;
+  await dbPut('chat',{role:'ai',text:reply.text,pending_actions:reply.pending_actions||[],resolved:{},time:Date.now()});
+  setTimeout(()=>renderChat(document.getElementById('main-content')),50);
+}
+
+function summarizeAction(action){
+  const p=action.payload||{};
+  if(action.type==='task') return `${p.text||''}`;
+  if(action.type==='workout') return `سطح: ${p.level||''} · هدف: ${p.goal||''}\n${(p.exercises||[]).map(e=>`• ${e.name} — ${e.duration} دقیقه${e.sets?' · '+e.sets:''}`).join('\n')}`;
+  if(action.type==='study') return `درس: ${p.subject||''} · ${p.hours_per_day||''} ساعت/روز\n${(p.days||[]).map(d=>`روز ${d.day}: ${d.topic}`).join('\n')}`;
+  if(action.type==='language') return `${p.language||''} · سطح ${p.level||''}\n${(p.vocabulary||[]).slice(0,5).map(v=>`• ${v.word} = ${v.meaning}`).join('\n')}`;
+  return JSON.stringify(p);
+}
+
+async function renderChat(container){
+  const msgs=await dbGetAll('chat');
+  msgs.sort((a,b)=>a.time-b.time);
+
+  container.innerHTML=`
+    <div class="chat-container" id="chat-container">
+      <div class="chat-msg ai">
+        <div class="chat-avatar">🖤</div>
+        <div class="chat-bubble">
+          <div style="font-weight:700;margin-bottom:.3rem">سلام! 👋</div>
+          من ZHOVIKA هستم، دستیار شخصی هوشمندت. می‌تونم برات:
+          <br>• ✅ وظایف بسازم و مدیریت کنم
+          <br>• 💪 برنامه ورزشی بچینم
+          <br>• 📚 برنامه درسی تنظیم کنم
+          <br>• 🌍 درس زبان بدم
+          <br>• 💰 بودجه‌ات رو آنالیز کنم
+          <br><br>چی نیاز داری؟ مستقیم بگو، خودم همه‌چی رو می‌چینم! 🎯
+        </div>
+      </div>
+      ${msgs.map(m=>`
+        <div class="chat-msg ${m.role}">
+          <div class="chat-avatar">${m.role==='user'?'👤':'🖤'}</div>
+          <div class="chat-bubble">
+            ${escapeHtml(m.text)}
+            ${(m.pending_actions||[]).map((a,i)=>renderPendingActionCard(m.id,a,i,(m.resolved||{})[i])).join('')}
+          </div>
+        </div>
+      `).join('')}
+      ${isPlanning?`<div class="chat-msg ai" id="planning-msg"><div class="chat-avatar">🖤</div><div class="chat-bubble"><div class="skeleton" style="height:60px;width:200px"></div></div></div>`:''}
+    </div>
+  `;
+  container.scrollTop=container.scrollHeight;
+
+  // Show quick suggestions
+  const wrap=document.getElementById('chat-input');
+  let sugg=document.getElementById('chat-suggestions');
+  if(!sugg){
+    sugg=document.createElement('div');
+    sugg.id='chat-suggestions';
+    sugg.className='chat-suggestions';
+    wrap.parentNode.insertBefore(sugg,wrap);
+  }
+  sugg.innerHTML=`
+    <div class="chat-chip" onclick="fillChat('برنامه ورزشی ۳ روزه بچین')">💪 ورزش</div>
+    <div class="chat-chip" onclick="fillChat('یه درس زبان انگلیسی A1 بده')">🌍 زبان</div>
+    <div class="chat-chip" onclick="fillChat('برای امتحان ریاضی برنامه بچین')">📚 درس</div>
+    <div class="chat-chip" onclick="fillChat('وظایف امروزم رو اولویت‌بندی کن')">✅ وظایف</div>
+    <div class="chat-chip" onclick="fillChat('هزینه‌های این ماه رو آنالیز کن')">💰 بودجه</div>
+  `;
+}
+
+function fillChat(text){
+  document.getElementById('chat-text').value=text;
+  sendChat();
+}
+
+function jDateAddDays(jy,jm,jd,n){
+  const g=Jalaali.toGregorian(jy,jm,jd);
+  const d=new Date(g.gy,g.gm-1,g.gd);
+  d.setDate(d.getDate()+n);
+  return Jalaali.toJalaali(d.getFullYear(),d.getMonth()+1,d.getDate());
+}
+
+// ═══════════════════════════════════════════
+// LOCAL PLANNER ENGINE — works with zero API / API key.
+// Rule-based intent detection so the assistant is genuinely useful offline
+// or when no ANTHROPIC_API_KEY is configured on the backend.
+// ═══════════════════════════════════════════
+let pendingGoalTitle=null; // session-only: waiting for the cost of a just-named goal
+let pendingGoalSuggested=null; // session-only: researched cost estimate offered for that goal
+
+function parseYears(text){
+  const s=normalizeDigits(text);
+  const m=s.match(/(\d+)\s*سال/);
+  return m?parseInt(m[1],10):null;
+}
+
+function normalizeDigits(s){
+  const fa='۰۱۲۳۴۵۶۷۸۹',ar='٠١٢٣٤٥٦٧٨٩';
+  return s.replace(/[۰-۹٠-٩]/g,d=>{let i=fa.indexOf(d);if(i>-1)return i;i=ar.indexOf(d);if(i>-1)return i;return d;});
+}
+
+function parseAmount(text){
+  const s=normalizeDigits(text);
+  const re=/(\d[\d,]{0,15})\s*(میلیارد|میلیون|هزار)?/g;
+  let best=null,m;
+  while((m=re.exec(s))){
+    let num=parseInt(m[1].replace(/,/g,''),10);
+    if(isNaN(num)||num===0)continue;
+    if(m[2]==='میلیارد')num*=1000000000;
+    else if(m[2]==='میلیون')num*=1000000;
+    else if(m[2]==='هزار')num*=1000;
+    if(best===null||num>best)best=num;
+  }
+  return best;
+}
+
+const PLACEMENT_BANK={
+  english:[
+    {q:"'I ___ a student.'",options:['am','is','are','be'],answer:'am',difficulty:'A1'},
+    {q:"'She ___ to school every day.'",options:['go','goes','going','went'],answer:'goes',difficulty:'A1'},
+    {q:"'Yesterday I ___ to the market.'",options:['go','goes','went','gone'],answer:'went',difficulty:'A2'},
+    {q:"'If I ___ rich, I would travel.'",options:['am','was','were','be'],answer:'were',difficulty:'B1'},
+    {q:"'By next year, she ___ here for a decade.'",options:['will work','will have worked','works','worked'],answer:'will have worked',difficulty:'B2'},
+    {q:"Choose the word closest to 'meticulous':",options:['careless','careful','fast','loud'],answer:'careful',difficulty:'C1'}
+  ],
+  french:[
+    {q:"'Je ___ étudiant.'",options:['suis','es','est','sont'],answer:'suis',difficulty:'A1'},
+    {q:"'Elle ___ au marché.'",options:['va','vais','vont','allez'],answer:'va',difficulty:'A1'},
+    {q:"'Hier, je ___ au cinéma.'",options:['vais','suis allé','irai','allais'],answer:'suis allé',difficulty:'A2'},
+    {q:"'Si j'étais riche, je ___.'",options:['voyage','voyagerai','voyagerais','voyageais'],answer:'voyagerais',difficulty:'B1'},
+    {q:"Choisissez le synonyme de 'méticuleux':",options:['négligent','soigneux','rapide','bruyant'],answer:'soigneux',difficulty:'B2'}
+  ],
+  german:[
+    {q:"'Ich ___ Student.'",options:['bin','bist','ist','sind'],answer:'bin',difficulty:'A1'},
+    {q:"'Sie ___ jeden Tag zur Schule.'",options:['geht','gehe','gehst','gehen'],answer:'geht',difficulty:'A1'},
+    {q:"'Gestern ___ ich ins Kino gegangen.'",options:['bin','habe','war','hatte'],answer:'bin',difficulty:'A2'},
+    {q:"'Wenn ich reich ___, würde ich reisen.'",options:['bin','war','wäre','sei'],answer:'wäre',difficulty:'B1'},
+    {q:"Synonym für 'sorgfältig':",options:['nachlässig','genau','schnell','laut'],answer:'genau',difficulty:'B2'}
+  ],
+  spanish:[
+    {q:"'Yo ___ estudiante.'",options:['soy','eres','es','son'],answer:'soy',difficulty:'A1'},
+    {q:"'Ella ___ al mercado.'",options:['va','voy','van','vais'],answer:'va',difficulty:'A1'},
+    {q:"'Ayer ___ al cine.'",options:['voy','fui','iré','iba'],answer:'fui',difficulty:'A2'},
+    {q:"'Si yo ___ rico, viajaría.'",options:['soy','fui','fuera','sería'],answer:'fuera',difficulty:'B1'},
+    {q:"Sinónimo de 'meticuloso':",options:['descuidado','cuidadoso','rápido','ruidoso'],answer:'cuidadoso',difficulty:'B2'}
+  ],
+  italian:[
+    {q:"'Io ___ studente.'",options:['sono','sei','è','siete'],answer:'sono',difficulty:'A1'},
+    {q:"'Lei ___ al mercato.'",options:['va','vado','vanno','andate'],answer:'va',difficulty:'A1'},
+    {q:"'Ieri ___ al cinema.'",options:['vado','sono andato','andrò','andavo'],answer:'sono andato',difficulty:'A2'},
+    {q:"'Se io ___ ricco, viaggerei.'",options:['sono','fossi','sarei','ero'],answer:'fossi',difficulty:'B1'},
+    {q:"Sinonimo di 'meticoloso':",options:['negligente','preciso','veloce','rumoroso'],answer:'preciso',difficulty:'B2'}
+  ],
+  korean:[
+    {q:"저는 학생___니다.",options:['입','습','있','했'],answer:'입',difficulty:'A1'},
+    {q:"그녀는 학교에 ___.",options:['갑니다','가요','간다','갔다'],answer:'갑니다',difficulty:'A1'},
+    {q:"어제 시장에 ___.",options:['갑니다','갔어요','갈 거예요','가요'],answer:'갔어요',difficulty:'A2'},
+    {q:"내일 비가 ___.",options:['올 거예요','왔어요','옵니다','오세요'],answer:'올 거예요',difficulty:'B1'},
+    {q:"'꼼꼼하다'와 가장 가까운 단어:",options:['부주의하다','세심하다','빠르다','시끄럽다'],answer:'세심하다',difficulty:'B2'}
+  ]
+};
+
+function levelFromScore(correct,total){
+  const pct=total?correct/total:0;
+  if(pct<0.3)return'A1';if(pct<0.5)return'A2';if(pct<0.7)return'B1';if(pct<0.85)return'B2';return'C1';
+}
+
+async function localPlannerEngine(text){
+  const t=text.trim();
+  const tl=t.toLowerCase();
+
+  // 0) Follow-up: we just asked for the cost of a newly-named goal.
+  if(pendingGoalTitle){
+    const years=parseYears(t)||3;
+    let amount=parseAmount(t);
+    if(!amount&&pendingGoalSuggested&&/(همون|پیشنهاد|باشه|قبوله|اره|آره)/.test(t)){
+      amount=pendingGoalSuggested;
+    }
+    if(amount){
+      await saveGoal({title:pendingGoalTitle,targetCost:amount,years,createdAt:Date.now()});
+      const title=pendingGoalTitle;
+      pendingGoalTitle=null;pendingGoalSuggested=null;
+      return {text:`🎯 عالی! هدفت رو ثبت کردم:\n«${title}» با هزینه‌ی ${amount.toLocaleString('fa-IR')} تومان، تو یه بازه‌ی ${years} ساله.\n\nحالا هر وقت درآمدی داشتی یا خرجی کردی بهم بگو، خودم پیشرفتت به سمت این هدف رو حساب می‌کنم و بهت می‌گم چقدر مونده. می‌تونی هر وقت خواستی بپرسی «چقدر تا هدفم مونده؟»`,pending_actions:[]};
+    }
+    // didn't look like a number/confirmation — drop the pending state and fall through to normal handling
+    pendingGoalTitle=null;pendingGoalSuggested=null;
+  }
+
+  // 0.5) Result of a placement test we ourselves generated (local or AI-driven)
+  const placementResult=t.match(/نتیجه آزمون تعیین سطح (\w+): (\d+) از (\d+) سوال درست/);
+  if(placementResult){
+    const [,language,correctStr,totalStr]=placementResult;
+    const level=levelFromScore(parseInt(correctStr,10),parseInt(totalStr,10));
+    const map=await getLangProgressMap();
+    const existing=map[language]||defaultLangProgress();
+    map[language]={...existing,level,started:existing.started||Date.now()};
+    await saveLangProgressMap(map);
+    await dbPut('settings',{key:'active_lang_code',value:language});
+    const hasLessons=LESSONS_DB[language]&&LESSONS_DB[language][level];
+    return {text:`🎯 سطحت تو ${LANGUAGES[language]?.name||language} مشخص شد: **${level}**.\n${hasLessons?`می‌تونی از تب «زبان» درس‌های سطح ${level} رو شروع کنی — دقیقاً مناسب سطحته.`:`درس‌های سطح ${level} به‌زودی اضافه می‌شن؛ فعلاً از تب «زبان» می‌تونی درس‌های موجود رو ببینی.`}`,pending_actions:[]};
+  }
+
+  // 1) Set / update long-term goal
+  if(/هدف/.test(t)&&(/بازکردن/.test(t)||/باز\s+کردن/.test(t)||/راه.?انداز/.test(t)||/بزنم/.test(t)||/تاسیس/.test(t)||/راه\s*بندازم/.test(t))){
+    const amount=parseAmount(t);
+    const years=parseYears(t)||3;
+    let title=t.replace(/هدف(م|ش|ای)?/g,'').replace(/بلندمدت/g,'').replace(/\d+\s*سال(ه)?/g,'')
+      .replace(/می‌خوام/g,'').replace(/بذارم/g,'').replace(/\s+تو\s*$/,'').replace(/\s+برای\s*$/,'')
+      .replace(/\s{2,}/g,' ').trim();
+    if(title.length>60)title=title.slice(0,60);
+    title=title||'هدف بلندمدت';
+    if(amount){
+      await saveGoal({title,targetCost:amount,years,createdAt:Date.now()});
+      return {text:`🎯 هدفت رو ثبت کردم: «${title}» با هزینه‌ی ${amount.toLocaleString('fa-IR')} تومان، تو یه بازه‌ی ${years} ساله.\n\nهر وقت درآمد یا هزینه‌ای داشتی بهم بگو تا پیشرفتت رو حساب کنم.`,pending_actions:[]};
+    }
+    pendingGoalTitle=title;
+    const suggestion=suggestGoalCost(title);
+    pendingGoalSuggested=suggestion?suggestion.amount:null;
+    const askText=suggestion
+      ? `🎯 باشه، هدفت رو «${title}» تو یه بازه‌ی ${years} ساله ثبت می‌کنم.\n\n💡 ${suggestion.note}\n\nیه عدد دقیق‌تر بگو، یا بنویس «همون پیشنهادی» تا ${suggestion.amount.toLocaleString('fa-IR')} تومان رو به‌عنوان هدف بذارم.`
+      : `🎯 باشه، هدفت رو «${title}» ثبت می‌کنم.\nبرای این‌که بتونم پیشرفتت رو دقیق حساب کنم، بگو تقریباً چقدر هزینه لازم داره؟ (مثلاً: ۵۰۰ میلیون تومان)`;
+    return {text:askText,pending_actions:[]};
+  }
+
+  // 2) Income (job earnings)
+  if((/درآمد/.test(t)||/گرفتم/.test(t)||/واریز/.test(t)||/حقوق/.test(t)||/دستمزد/.test(t))&&parseAmount(t)){
+    const amount=parseAmount(t);
+    const jNow=Jalaali.now();
+    await dbPut('income',{source:'از چت — '+t.slice(0,40),amount,jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,created:Date.now()});
+    const f=await computeFinance();
+    let goalLine='';
+    if(f.goal) goalLine=`\n🎯 الان ${f.progressPct}٪ به «${f.goal.title}» رسیدی.`;
+    return {text:`💼 ${amount.toLocaleString('fa-IR')} تومان درآمد ثبت شد.\n💵 نقد فعلی: ${f.cash.toLocaleString('fa-IR')} تومان${goalLine}`,pending_actions:[]};
+  }
+
+  // 3) Expense
+  if((/خرج\s*کردم/.test(t)||/هزینه\s*کردم/.test(t)||/دادم\s*بابت/.test(t)||/خریدم/.test(t))&&parseAmount(t)){
+    const amount=parseAmount(t);
+    const jNow=Jalaali.now();
+    await dbPut('expenses',{title:t.slice(0,40),amount,category:'other',jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,created:Date.now()});
+    const f=await computeFinance();
+    let warn=f.overBudget?`\n\n⚠️ توجه: از محدودیت بودجه‌ی این ماه (${f.limit.toLocaleString('fa-IR')} تومان) گذشتی! هزینه این ماه: ${f.thisMonthExp.toLocaleString('fa-IR')} تومان.`:'';
+    return {text:`💰 ${amount.toLocaleString('fa-IR')} تومان هزینه ثبت شد.\n💵 نقد فعلی: ${f.cash.toLocaleString('fa-IR')} تومان${warn}`,pending_actions:[]};
+  }
+
+  // 4) Debt
+  if((/بدهکارم/.test(t)||/قرض\s*دارم/.test(t)||/وام\s*دارم/.test(t)||/بدهی/.test(t))&&parseAmount(t)){
+    const amount=parseAmount(t);
+    await dbPut('debts',{name:t.slice(0,40),amount,note:'',created:Date.now()});
+    const f=await computeFinance();
+    return {text:`📉 ${amount.toLocaleString('fa-IR')} تومان بدهی ثبت شد.\nبدهی کل: ${f.totalDebt.toLocaleString('fa-IR')} تومان`,pending_actions:[]};
+  }
+
+  // 5) Progress query
+  if(/چقدر.*(مونده|مانده)/.test(t)||/چند\s*درصد/.test(t)||(/پیشرفت/.test(t)&&/هدف/.test(t))){
+    const f=await computeFinance();
+    if(!f.goal) return {text:'هنوز هدف بلندمدتی برام تعریف نکردی. بگو مثلاً «هدفم بازکردن پیتزافروشیه با هزینه ۵۰۰ میلیون» تا شروع کنم به حساب کردن پیشرفتت.',pending_actions:[]};
+    return {text:`🎯 هدف: «${f.goal.title}»\n📊 پیشرفت: ${f.progressPct}٪\n💵 دارایی خالص: ${f.netWorth.toLocaleString('fa-IR')} تومان\n💰 نقد: ${f.cash.toLocaleString('fa-IR')} تومان\n📉 بدهی: ${f.totalDebt.toLocaleString('fa-IR')} تومان\n🎯 هزینه هدف: ${f.goal.targetCost.toLocaleString('fa-IR')} تومان`,pending_actions:[]};
+  }
+
+  // 6) Nightly checklist for tomorrow
+  if(/فردا/.test(t)&&(/کارا/.test(t)||/وظیفه/.test(t)||/چک\s*لیست/.test(t)||/باید/.test(t))){
+    const body=t.replace(/^.*?(فردا)/,'').replace(/^\s*(باید|کارام|کارامو|کارای فردا)/,'');
+    const items=body.split(/[،,\n؛]|(?:\sو\s)/).map(s=>s.trim()).filter(s=>s.length>1);
+    if(items.length===0) return {text:'باشه، بگو دقیقاً چه کارایی برای فردا داری تا برات چک‌لیست بسازم (مثلاً: خرید نان، تمرین ورزش، تماس با مشتری)',pending_actions:[]};
+    const jNow=Jalaali.now();
+    const tmr=jDateAddDays(jNow.jy,jNow.jm,jNow.jd,1);
+    const jDateStr=`${tmr.jy}/${tmr.jm}/${tmr.jd}`;
+    const created=[];
+    for(const item of items){
+      let priority='medium';
+      if(/فوری|ضروری|مهم/.test(item))priority='high';
+      else if(/اگه وقت شد|در صورت امکان|شاید/.test(item))priority='low';
+      await dbPut('tasks',{text:item,done:false,jDate:jDateStr,priority,created:Date.now()});
+      created.push(`${priority==='high'?'🔴':priority==='low'?'🔵':'🟡'} ${item}`);
+    }
+    return {text:`✅ چک‌لیست فردا (${jDateStr}) ساخته شد — ${items.length} مورد:\n\n${created.join('\n')}\n\nهمشو تو تب «وظایف» می‌بینی و می‌تونی تیک بزنی.`,pending_actions:[]};
+  }
+
+  // 7) Workout plan (local, rule-based — no API needed)
+  if(/ورزش/.test(t)||/تمرین/.test(t)||/بدنسازی/.test(t)){
+    const weightM=t.match(/(\d+)\s*کیلو/);
+    const heightM=t.match(/(\d+)\s*سانت/);
+    const level=/پیشرفته/.test(t)?'advanced':/متوسط/.test(t)?'intermediate':'beginner';
+    if(!weightM&&!heightM){
+      return {text:`💪 حتماً! برای اینکه برنامه‌ی ورزشی متناسب با خودت بسازم بگو:\n• وزن و قدت چقدره؟ (مثلاً ۷۵ کیلو، ۱۸۰ سانت)\n• سطحت چیه؟ (مبتدی/متوسط/پیشرفته)\n• هدفت چیه؟ (کاهش وزن/عضله‌سازی/تناسب اندام)`,pending_actions:[]};
+    }
+    const weight=weightM?parseInt(weightM[1]):70;
+    const height=heightM?parseInt(heightM[1]):175;
+    const bmi=(weight/((height/100)**2)).toFixed(1);
+    const goal=/کاهش\s*وزن/.test(t)?'کاهش وزن':/عضله/.test(t)?'عضله‌سازی':'تناسب اندام';
+    let exercises;
+    if(level==='beginner') exercises=[
+      {name:'پیاده‌روی سریع',duration:30,calories:150},
+      {name:'اسکوات',duration:10,calories:50,sets:'۳×۱۰'},
+      {name:'شنا',duration:8,calories:40,sets:'۳×۵'},
+      {name:'پلانک',duration:5,calories:20,sets:'۳×۲۰ ثانیه'}
+    ];
+    else if(level==='intermediate') exercises=[
+      {name:'دویدن آهسته',duration:30,calories:300},
+      {name:'اسکوات با دمبل',duration:15,calories:100,sets:'۴×۱۲'},
+      {name:'شنا',duration:10,calories:60,sets:'۳×۱۵'},
+      {name:'لانگ',duration:10,calories:80,sets:'۳×۱۲'},
+      {name:'پلانک',duration:5,calories:30,sets:'۳×۴۵ ثانیه'}
+    ];
+    else exercises=[
+      {name:'دویدن تناوبی',duration:30,calories:400},
+      {name:'اسکوات پرشی',duration:15,calories:150,sets:'۴×۱۵'},
+      {name:'شنا الماس',duration:10,calories:100,sets:'۴×۱۲'},
+      {name:'بورپی',duration:10,calories:150,sets:'۳×۱۰'}
+    ];
+    return {
+      text:`🎯 برنامه ورزشی ${level==='beginner'?'مبتدی':level==='intermediate'?'متوسط':'پیشرفته'} برات چیدم (BMI: ${bmi}، هدف: ${goal}) — تاییدش کن تا اضافه بشه 👇`,
+      pending_actions:[{id:'local_'+Date.now(),type:'workout',tool:'local',payload:{level,goal,bmi_note:`BMI: ${bmi}`,exercises}}]
+    };
+  }
+
+  // 8) Language: no level given → run local placement quiz; level given → hand off to normal AI/lesson flow
+  const langMatch=Object.keys(LANGUAGES).find(code=>tl.includes(code)||tl.includes(LANGUAGES[code].name.split(' ')[1]));
+  if(langMatch&&/زبان|یاد بگیرم|آموزش/.test(t)&&!/[ABC][12]/i.test(t)&&!/سطحم/.test(t)){
+    const bank=PLACEMENT_BANK[langMatch];
+    if(bank){
+      return {
+        text:`🎯 قبل از شروع، بیا سطحت رو تو ${LANGUAGES[langMatch].name} بسنجیم — به این چند سوال جواب بده:`,
+        pending_actions:[{id:'local_'+Date.now(),type:'placement_test',tool:'local',payload:{language:langMatch,questions:bank}}]
+      };
+    }
+  }
+
+  return null; // no local intent recognized → caller falls back to online AI / generic reply
+}
+
+async function processAIChat(text){
+  // 1) Try the local, no-API-needed planner first — goal/budget/checklist/
+  // workout/placement-test all work fully offline.
+  const local=await localPlannerEngine(text);
+  if(local) return local;
+
+  // 2) Build recent conversation so the assistant actually has memory,
+  // instead of only ever seeing the latest message.
+  const history=(await dbGetAll('chat')).sort((a,b)=>a.time-b.time).slice(-12)
+    .map(m=>({role:m.role==='user'?'user':'assistant',content:m.text}));
+
+  if(isOnline){
+    try{
+      const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,user_id:'local',context:history})});
+      if(resp.ok){
+        const data=await resp.json();
+        return {text:data.response,pending_actions:data.pending_actions||[]};
+      }
+    }catch(e){console.log('API error',e);}
+  }
+
+  // 3) Only reached when offline / no backend AI key AND no local intent matched.
+  return {text:enhancedAIResponse(text),pending_actions:[]};
+}
+
+async function addSimpleReminder(text,hh,mm,repeat){
+  const t=new Date();t.setHours(hh,mm,0,0);
+  await dbPut('reminders',{text,timeStr:`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`,time:t.getTime(),repeat,active:true,lastFired:null,created:Date.now()});
+}
+
+async function confirmPendingAction(msgId,index){
+  const msg=await dbGet('chat',msgId);
+  if(!msg||!msg.pending_actions||!msg.pending_actions[index])return;
+  const action=msg.pending_actions[index];
+  const p=action.payload||{};
+  const jNow=Jalaali.now();
+
+  if(action.type==='task'){
+    const j=p.when==='tomorrow'?jDateAddDays(jNow.jy,jNow.jm,jNow.jd,1):jNow;
+    await dbPut('tasks',{text:p.text||'وظیفه جدید',done:false,jDate:`${j.jy}/${j.jm}/${j.jd}`,priority:p.priority||'medium',created:Date.now()});
+  }else if(action.type==='workout'){
+    const jDateStr=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+    for(const ex of (p.exercises||[])){
+      await dbPut('exercises',{name:ex.name,duration:ex.duration,calories:ex.calories||0,sets:ex.sets||null,type:ex.sets?'strength':'cardio',jDate:jDateStr,created:Date.now()});
+    }
+    const first=(p.exercises||[])[0];
+    const label=`💪 تمرین امروز: ${first?first.name:'ورزش'}${p.exercises&&p.exercises.length>1?` + ${p.exercises.length-1} تمرین دیگر`:''}`;
+    await dbPut('tasks',{text:label,done:false,jDate:jDateStr,priority:'high',created:Date.now()});
+    await addSimpleReminder(label,8,0,'once');
+  }else if(action.type==='study'){
+    const jDateStr=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+    await dbPut('study',{title:p.subject,subject:p.subject,hours_per_day:p.hours_per_day,days:p.days||[],progress:0,jDate:jDateStr,created:Date.now()});
+    const firstDay=(p.days||[])[0];
+    const label=`📚 مطالعه ${p.subject||''}${firstDay?': '+firstDay.topic:''}`;
+    await dbPut('tasks',{text:label,done:false,jDate:jDateStr,priority:'medium',created:Date.now()});
+    // Multi-day plan → daily reminder until the plan ends makes more sense than a one-off.
+    await addSimpleReminder(label,17,0,(p.days&&p.days.length>1)?'daily':'once');
+  }else if(action.type==='language'){
+    const map=await getLangProgressMap();
+    const existing=map[p.language]||defaultLangProgress();
+    const today=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+    map[p.language]={
+      level:p.level||existing.level,
+      xp:(existing.xp||0)+50,
+      streak:existing.lastStudied===today?(existing.streak||0):(existing.streak||0)+1,
+      started:existing.started||Date.now(),
+      lastStudied:today
+    };
+    await saveLangProgressMap(map);
+    await dbPut('settings',{key:'active_lang_code',value:p.language});
+    await dbPut('language',{language:p.language,level:p.level,title:p.title||'',grammar:p.grammar||'',exercise:p.exercise||[],xp:50,created:Date.now()});
+    for(const v of (p.vocabulary||[])){
+      await dbPut('vocabulary',{language:p.language,level:p.level,word:v.word,meaning:v.meaning,example:v.example||'',created:Date.now()});
+    }
+  }
+
+  msg.resolved=msg.resolved||{};
+  msg.resolved[index]='confirmed';
+  await dbPut('chat',msg);
+  showToast('✅ اضافه شد');
+  renderTab('chat');
+}
+
+async function rejectPendingAction(msgId,index){
+  const msg=await dbGet('chat',msgId);
+  if(!msg)return;
+  msg.resolved=msg.resolved||{};
+  msg.resolved[index]='rejected';
+  await dbPut('chat',msg);
+  renderTab('chat');
+}
+
+function enhancedAIResponse(text){
+  const t=text.toLowerCase();
+
+  if(t.includes('سلام')||t.includes('خوبی')||t.includes('حالت')){
+    return `سلام! 👋 من ZHOVIKA هستم، دستیار شخصی هوشمندت.
+
+امروز چطور می‌تونم کمکت کنم؟
+
+🎯 قابلیت‌های من:
+• ✅ مدیریت وظایف هوشمند
+• 💪 برنامه‌ریزی ورزشی شخصی‌سازی شده
+• 📚 برنامه مطالعاتی + پومودورو
+• 🌍 آموزش زبان (بهتر از دولینگو!)
+• 💰 پیگیری بودجه
+• 📅 تقویم شمسی کامل
+• 📱 مدیریت شبکه‌های اجتماعی
+
+کدوم بخش رو می‌خوای شروع کنی؟ مستقیم بگو! 🚀`;
+  }
+  if(t.includes('بودجه')||t.includes('پول')||t.includes('هزینه')){
+    return '💰 برای مدیریت مالی، به بخش "بیشتر > بودجه" برو. می‌تونی هزینه‌ها رو دسته‌بندی کنی، محدودیت ماهانه تعیین کنی و نمودار مصرف ببینی.';
+  }
+  if(t.includes('تقویم')||t.includes('رویداد')||t.includes('تاریخ')){
+    return '📅 تقویم شمسی کاملاً فعال شده! می‌تونی روی هر روز کلیک کنی و رویداد/وظیفه اون روز رو ببینی. همچنین می‌تونی رویداد جدید اضافه کنی.';
+  }
+  if(t.includes('اینستا')||t.includes('پست')){
+    return 'برای مدیریت اینستاگرام به بخش "بیشتر > شبکه‌های اجتماعی" برو. می‌تونی پست و استوری زمان‌بندی کنی.';
+  }
+  if(t.includes('تلگرام')||t.includes('ربات')){
+    return 'ربات تلگرام ZHOVIKA فعاله! می‌تونی پیام broadcast کنی و کانال رو مدیریت کنی.';
+  }
+
+  return 'متوجه شدم! می‌تونی جزئیات بیشتری بدی یا از منوی پایین بخش مورد نظر رو انتخاب کن. من می‌تونم برات برنامه‌ریزی کنم، وظایف بسازم، تمرین بدم، یا هر کمک دیگه‌ای بکنم. 🎯\n\nمثلاً بگو: "برنامه ورزشی بچین" یا "یه درس زبان بده"';
+}
+
+function escapeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+// Voice
+function toggleVoice(){
+  const btn=document.getElementById('voice-btn');
+  if(isRecording){stopRecording();btn.classList.remove('recording');btn.textContent='🎤';isRecording=false;}
+  else{startRecording();btn.classList.add('recording');btn.textContent='⏹️';isRecording=true;}
+}
+function startRecording(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){showToast('❌ مرورگر شما صدا به متن را پشتیبانی نمی‌کند');return;}
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SpeechRecognition();
+  recognition.lang='fa-IR';
+  recognition.continuous=false;
+  recognition.interimResults=false;
+  recognition.onresult=(e)=>{const text=e.results[0][0].transcript;document.getElementById('chat-text').value=text;showToast('🎤 '+text,2000);};
+  recognition.onerror=()=>{showToast('❌ خطا در تشخیص صدا');stopRecording();};
+  recognition.onend=()=>{if(isRecording)toggleVoice();};
+  recognition.start();
+  showToast('🎤 در حال گوش دادن...');
+}
+function stopRecording(){if(recognition){recognition.stop();recognition=null;}}
+
+// ═══════════════════════════════════════════
+// LANGUAGE LEARNING (Better than Duolingo!)
+// ═══════════════════════════════════════════
+const LANGUAGES = {
+  english: {name:'🇺🇸 انگلیسی',flag:'🇺🇸',levels:['A1','A2','B1','B2','C1','C2']},
+  french: {name:'🇫🇷 فرانسوی',flag:'🇫🇷',levels:['A1','A2','B1','B2','C1','C2']},
+  german: {name:'🇩🇪 آلمانی',flag:'🇩🇪',levels:['A1','A2','B1','B2','C1','C2']},
+  spanish: {name:'🇪🇸 اسپانیایی',flag:'🇪🇸',levels:['A1','A2','B1','B2','C1','C2']},
+  italian: {name:'🇮🇹 ایتالیایی',flag:'🇮🇹',levels:['A1','A2','B1','B2','C1','C2']},
+  korean: {name:'🇰🇷 کره‌ای',flag:'🇰🇷',levels:['A1','A2','B1','B2','C1','C2']}
+};
+
+const LESSONS_DB = {
+  english: {
+    A1: [
+      {id:'en_a1_1',title:'سلام و معرفی',desc:'Hello, name, country',icon:'👋',xp:50},
+      {id:'en_a1_2',title:'خانواده',desc:'Family members',icon:'👨‍👩‍👧‍👦',xp:50},
+      {id:'en_a1_3',title:'غذا و نوشیدنی',desc:'Food and drinks',icon:'🍕',xp:50},
+      {id:'en_a1_4',title:'اعداد ۱-۱۰۰',desc:'Numbers and counting',icon:'🔢',xp:50},
+      {id:'en_a1_5',title:'رنگ‌ها',desc:'Colors and descriptions',icon:'🎨',xp:50},
+    ],
+    A2: [
+      {id:'en_a2_1',title:'گذشته ساده',desc:'Past tense stories',icon:'📖',xp:60},
+      {id:'en_a2_2',title:'سفر و حمل‌ونقل',desc:'Travel vocabulary',icon:'✈️',xp:60},
+      {id:'en_a2_3',title:'خرید کردن',desc:'Shopping and money',icon:'🛍️',xp:60},
+    ],
+    B1: [
+      {id:'en_b1_1',title:'آینده و برنامه‌ریزی',desc:'Future plans',icon:'📅',xp:70},
+      {id:'en_b1_2',title:'احساسات',desc:'Feelings and emotions',icon:'😊',xp:70},
+      {id:'en_b1_3',title:'اخبار و رسانه',desc:'News and media',icon:'📺',xp:70},
+    ]
+  },
+  french: {
+    A1: [
+      {id:'fr_a1_1',title:'Bonjour!',desc:'Greetings and introductions',icon:'👋',xp:50},
+      {id:'fr_a1_2',title:'La famille',desc:'Family vocabulary',icon:'👨‍👩‍👧‍👦',xp:50},
+      {id:'fr_a1_3',title:'Au café',desc:'At the café',icon:'☕',xp:50},
+    ]
+  },
+  german: {
+    A1: [
+      {id:'de_a1_1',title:'Hallo!',desc:'Greetings in German',icon:'👋',xp:50},
+      {id:'de_a1_2',title:'Die Familie',desc:'Family members',icon:'👨‍👩‍👧‍👦',xp:50},
+      {id:'de_a1_3',title:'Im Restaurant',desc:'Ordering food',icon:'🍺',xp:50},
+    ]
+  },
+  spanish: {
+    A1: [
+      {id:'es_a1_1',title:'¡Hola!',desc:'Greetings in Spanish',icon:'👋',xp:50},
+      {id:'es_a1_2',title:'La familia',desc:'Family members',icon:'👨‍👩‍👧‍👦',xp:50},
+      {id:'es_a1_3',title:'La comida',desc:'Food and drinks',icon:'🍕',xp:50},
+      {id:'es_a1_4',title:'Números',desc:'Numbers and counting',icon:'🔢',xp:50},
+    ]
+  },
+  italian: {
+    A1: [
+      {id:'it_a1_1',title:'Ciao!',desc:'Greetings in Italian',icon:'👋',xp:50},
+      {id:'it_a1_2',title:'La famiglia',desc:'Family members',icon:'👨‍👩‍👧‍👦',xp:50},
+      {id:'it_a1_3',title:'Il cibo',desc:'Food and drinks',icon:'🍕',xp:50},
+    ]
+  },
+  korean: {
+    A1: [
+      {id:'ko_a1_1',title:'안녕하세요!',desc:'Greetings in Korean',icon:'👋',xp:50},
+      {id:'ko_a1_2',title:'가족',desc:'Family members',icon:'👨‍👩‍👧‍👦',xp:50},
+      {id:'ko_a1_3',title:'음식',desc:'Food and drinks',icon:'🍕',xp:50},
+    ]
+  }
+};
+
+const LESSON_CONTENT = {
+  en_a1_1:{vocab:[{word:'Hello',meaning:'سلام',example:'"Hello! How are you?" → "سلام! چطوری؟"'},{word:'My name is...',meaning:'اسم من ... است',example:'"My name is Ali."'},{word:'Nice to meet you',meaning:'از آشنایی با شما خوشحالم'}],exercise:{q:'_____ name is John.',options:['Your','My','His'],answer:'My'},speak:'Hello, my name is Ali. Nice to meet you!'},
+  en_a1_2:{vocab:[{word:'Mother',meaning:'مادر'},{word:'Father',meaning:'پدر'},{word:'Sister',meaning:'خواهر'},{word:'Brother',meaning:'برادر'}],exercise:{q:'This is my _____. She is kind.',options:['sister','brother','father'],answer:'sister'},speak:'This is my sister. She is very kind.'},
+  en_a1_3:{vocab:[{word:'Bread',meaning:'نان'},{word:'Water',meaning:'آب'},{word:'Coffee',meaning:'قهوه'},{word:'Rice',meaning:'برنج'}],exercise:{q:'I want a cup of _____.',options:['coffee','bread','rice'],answer:'coffee'},speak:'I want a cup of coffee, please.'},
+  en_a1_4:{vocab:[{word:'One',meaning:'یک'},{word:'Ten',meaning:'ده'},{word:'Twenty',meaning:'بیست'},{word:'Hundred',meaning:'صد'}],exercise:{q:'One plus one is _____.',options:['two','twelve','twenty'],answer:'two'},speak:'One, two, three, four, five.'},
+  en_a1_5:{vocab:[{word:'Red',meaning:'قرمز'},{word:'Blue',meaning:'آبی'},{word:'Green',meaning:'سبز'},{word:'Yellow',meaning:'زرد'}],exercise:{q:'The sky is _____.',options:['blue','red','green'],answer:'blue'},speak:'The sky is blue and the grass is green.'},
+  en_a2_1:{vocab:[{word:'Went',meaning:'رفت'},{word:'Saw',meaning:'دید'},{word:'Ate',meaning:'خورد'}],exercise:{q:'Yesterday I _____ to school.',options:['went','go','goes'],answer:'went'},speak:'Yesterday I went to school and saw my friend.'},
+  en_a2_2:{vocab:[{word:'Airport',meaning:'فرودگاه'},{word:'Ticket',meaning:'بلیط'},{word:'Train',meaning:'قطار'}],exercise:{q:'I bought a _____ for the train.',options:['ticket','airport','road'],answer:'ticket'},speak:'I bought a ticket for the train to the airport.'},
+  en_a2_3:{vocab:[{word:'Price',meaning:'قیمت'},{word:'Discount',meaning:'تخفیف'},{word:'Receipt',meaning:'رسید'}],exercise:{q:'This shirt has a 20% _____.',options:['discount','price','receipt'],answer:'discount'},speak:'This shirt has a twenty percent discount today.'},
+  en_b1_1:{vocab:[{word:'I will',meaning:'من خواهم'},{word:'Going to',meaning:'قراره'},{word:'Plan',meaning:'برنامه'}],exercise:{q:'Next year, I _____ travel abroad.',options:['will','went','going'],answer:'will'},speak:'Next year, I will travel abroad for the first time.'},
+  en_b1_2:{vocab:[{word:'Happy',meaning:'خوشحال'},{word:'Sad',meaning:'غمگین'},{word:'Excited',meaning:'هیجان‌زده'}],exercise:{q:'She feels _____ about the trip.',options:['excited','sad','nothing'],answer:'excited'},speak:'She feels very excited about the trip.'},
+  en_b1_3:{vocab:[{word:'News',meaning:'اخبار'},{word:'Headline',meaning:'تیتر'},{word:'Article',meaning:'مقاله'}],exercise:{q:'I read an interesting _____ today.',options:['article','headline','news'],answer:'article'},speak:'I read an interesting article in the news today.'},
+
+  fr_a1_1:{vocab:[{word:'Bonjour',meaning:'سلام'},{word:'Merci',meaning:'متشکرم'},{word:'Au revoir',meaning:'خداحافظ'}],exercise:{q:"_____, comment allez-vous?",options:['Bonjour','Merci','Au revoir'],answer:'Bonjour'},speak:'Bonjour, comment allez-vous?'},
+  fr_a1_2:{vocab:[{word:'Mère',meaning:'مادر'},{word:'Père',meaning:'پدر'},{word:'Frère',meaning:'برادر'}],exercise:{q:'Voici ma _____.',options:['mère','père','frère'],answer:'mère'},speak:'Voici ma mère et mon père.'},
+  fr_a1_3:{vocab:[{word:'Café',meaning:'قهوه'},{word:'Croissant',meaning:'کروسان'},{word:"L'addition",meaning:'صورت‌حساب'}],exercise:{q:"Je voudrais un _____ s'il vous plaît.",options:['café','croissant',"l'addition"],answer:'café'},speak:"Je voudrais un café, s'il vous plaît."},
+
+  de_a1_1:{vocab:[{word:'Hallo',meaning:'سلام'},{word:'Danke',meaning:'متشکرم'},{word:'Tschüss',meaning:'خداحافظ'}],exercise:{q:"_____, wie geht's?",options:['Hallo','Danke','Tschüss'],answer:'Hallo'},speak:"Hallo, wie geht's dir heute?"},
+  de_a1_2:{vocab:[{word:'Mutter',meaning:'مادر'},{word:'Vater',meaning:'پدر'},{word:'Bruder',meaning:'برادر'}],exercise:{q:'Das ist meine _____.',options:['Mutter','Vater','Bruder'],answer:'Mutter'},speak:'Das ist meine Mutter und mein Vater.'},
+  de_a1_3:{vocab:[{word:'Speisekarte',meaning:'منو'},{word:'Rechnung',meaning:'صورت‌حساب'},{word:'Bier',meaning:'آبجو'}],exercise:{q:'Können wir die _____ haben?',options:['Speisekarte','Rechnung','Bier'],answer:'Speisekarte'},speak:'Können wir die Speisekarte haben, bitte?'},
+
+  es_a1_1:{vocab:[{word:'Hola',meaning:'سلام'},{word:'Gracias',meaning:'متشکرم'},{word:'Adiós',meaning:'خداحافظ'}],exercise:{q:'_____, ¿cómo estás?',options:['Hola','Gracias','Adiós'],answer:'Hola'},speak:'Hola, cómo estás hoy?'},
+  es_a1_2:{vocab:[{word:'Madre',meaning:'مادر'},{word:'Padre',meaning:'پدر'},{word:'Hermana',meaning:'خواهر'}],exercise:{q:'Ella es mi _____.',options:['hermana','padre','madre'],answer:'hermana'},speak:'Ella es mi hermana, se llama Ana.'},
+  es_a1_3:{vocab:[{word:'Pan',meaning:'نان'},{word:'Agua',meaning:'آب'},{word:'Café',meaning:'قهوه'}],exercise:{q:'Quiero un vaso de _____.',options:['agua','pan','café'],answer:'agua'},speak:'Quiero un vaso de agua, por favor.'},
+  es_a1_4:{vocab:[{word:'Uno',meaning:'یک'},{word:'Dos',meaning:'دو'},{word:'Diez',meaning:'ده'}],exercise:{q:'Tengo _____ manzanas.',options:['dos','diez','uno'],answer:'dos'},speak:'Tengo dos manzanas y un plátano.'},
+
+  it_a1_1:{vocab:[{word:'Ciao',meaning:'سلام'},{word:'Grazie',meaning:'متشکرم'},{word:'Arrivederci',meaning:'خداحافظ'}],exercise:{q:'_____, come stai?',options:['Ciao','Grazie','Arrivederci'],answer:'Ciao'},speak:'Ciao, come stai oggi?'},
+  it_a1_2:{vocab:[{word:'Madre',meaning:'مادر'},{word:'Padre',meaning:'پدر'},{word:'Sorella',meaning:'خواهر'}],exercise:{q:'Lei è mia _____.',options:['sorella','padre','madre'],answer:'sorella'},speak:'Lei è mia sorella, si chiama Giulia.'},
+  it_a1_3:{vocab:[{word:'Pane',meaning:'نان'},{word:'Acqua',meaning:'آب'},{word:'Caffè',meaning:'قهوه'}],exercise:{q:"Vorrei un bicchiere d'_____.",options:['acqua','pane','caffè'],answer:'acqua'},speak:"Vorrei un bicchiere d'acqua, grazie."},
+
+  ko_a1_1:{vocab:[{word:'안녕하세요',meaning:'سلام'},{word:'감사합니다',meaning:'متشکرم'},{word:'안녕히 가세요',meaning:'خداحافظ'}],exercise:{q:'_____, 어떻게 지내세요?',options:['안녕하세요','감사합니다','안녕히 가세요'],answer:'안녕하세요'},speak:'annyeonghaseyo'},
+  ko_a1_2:{vocab:[{word:'어머니',meaning:'مادر'},{word:'아버지',meaning:'پدر'},{word:'여동생',meaning:'خواهر کوچک‌تر'}],exercise:{q:'이 사람은 제 _____입니다.',options:['어머니','아버지','여동생'],answer:'어머니'},speak:'eomeoni'},
+  ko_a1_3:{vocab:[{word:'빵',meaning:'نان'},{word:'물',meaning:'آب'},{word:'커피',meaning:'قهوه'}],exercise:{q:'_____ 한 잔 주세요.',options:['커피','빵','물'],answer:'커피'},speak:'keopi'}
+};
+
+const TTS_LANG_MAP={english:'en-US',french:'fr-FR',german:'de-DE',spanish:'es-ES',italian:'it-IT',korean:'ko-KR'};
+
+async function getLangProgressMap(){
+  const rec=await dbGet('settings','lang_progress_map');
+  return (rec&&rec.value)||{};
+}
+async function saveLangProgressMap(map){
+  await dbPut('settings',{key:'lang_progress_map',value:map});
+}
+function defaultLangProgress(){
+  return {level:'A1',xp:0,streak:0,started:Date.now(),lastStudied:null};
+}
+
+async function renderLanguage(container){
+  const langProgress=await dbGetAll('language');
+  const vocab=await dbGetAll('vocabulary');
+  const map=await getLangProgressMap();
+
+  const activeRec=await dbGet('settings','active_lang_code');
+  let activeCode=(activeRec&&activeRec.value)||Object.keys(map)[0]||'english';
+  if(!map[activeCode]) map[activeCode]=defaultLangProgress();
+  currentLang={code:activeCode,...map[activeCode]};
+
+  const startedCodes=Object.keys(map);
+
+  container.innerHTML=`
+    <div class="content-enter">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:3rem;margin-bottom:.5rem">${LANGUAGES[currentLang.code]?.flag||'🌍'}</div>
+        <h2 style="font-size:1.2rem;font-weight:800">${LANGUAGES[currentLang.code]?.name||'زبان'}</h2>
+        <p style="color:var(--text3);font-size:.8rem">سطح ${currentLang.level} · ${currentLang.xp||0} XP · <span class="streak-flame">🔥</span> ${currentLang.streak||0} روز</p>
+        <div class="xp-bar" style="max-width:200px;margin:.8rem auto">
+          <div class="xp-fill" style="width:${Math.min(100,((currentLang.xp||0)%100))}%"></div>
+        </div>
+        ${startedCodes.length>1?`<p style="font-size:.7rem;color:var(--text3);margin-top:.3rem">🌍 در حال یادگیری ${startedCodes.length} زبان همزمان</p>`:''}
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:1rem;overflow-x:auto;scrollbar-width:none">
+        ${Object.entries(LANGUAGES).map(([code,lang])=>`
+          <div class="lang-card ${code===currentLang.code?'active':''}" onclick="selectLanguage('${code}')" style="position:relative">
+            <div class="lang-flag">${lang.flag}</div>
+            <div class="lang-name">${lang.name.split(' ')[1]}</div>
+            ${map[code]?`<div style="font-size:.6rem;color:var(--gold);margin-top:2px">${map[code].level} · ${map[code].xp||0}xp</div>`:''}
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 درس‌های امروز</div>
+        ${renderLessons(currentLang.code,currentLang.level,langProgress)}
+      </div>
+
+      <div style="display:flex;gap:10px;margin:1rem 0">
+        <button class="btn-gold" style="flex:1" onclick="startLangConversation()">🗣️ مکالمه با AI</button>
+        <button class="btn-outline" style="flex:1" onclick="showVocabReview()">📚 لغت</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 آمار یادگیری</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center">
+          <div><div style="font-size:1.5rem;font-weight:800;color:var(--gold)">${langProgress.filter(p=>p.lang===currentLang.code).length}</div><div style="font-size:.65rem;color:var(--text3)">درس تکمیل</div></div>
+          <div><div style="font-size:1.5rem;font-weight:800;color:var(--gold)">${vocab.filter(v=>v.language===currentLang.code).length}</div><div style="font-size:.65rem;color:var(--text3)">لغت یادگرفته</div></div>
+          <div><div style="font-size:1.5rem;font-weight:800;color:var(--gold)">${currentLang.streak||0}</div><div style="font-size:.65rem;color:var(--text3)">روز متوالی</div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderLessons(lang,level,progress){
+  const lessons=LESSONS_DB[lang]?.[level]||[];
+  if(lessons.length===0) return '<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2rem">📚</span><p>درسی موجود نیست</p></div>';
+
+  const completed=new Set(progress.filter(p=>p.completed).map(p=>p.lessonId));
+
+  return lessons.map((l,i)=>{
+    const isCompleted=completed.has(l.id);
+    const isAvailable=i===0||completed.has(lessons[i-1]?.id);
+    const status=isCompleted?'completed':isAvailable?'available':'locked';
+    const statusIcon=isCompleted?'✓':isAvailable?'▶':'🔒';
+
+    return `
+      <div class="lesson-card" onclick="${isAvailable?`startLesson('${lang}','${level}','${l.id}')`:''}">
+        <div class="lesson-icon">${l.icon}</div>
+        <div class="lesson-info">
+          <div class="lesson-title">${l.title}</div>
+          <div class="lesson-desc">${l.desc} · ${l.xp} XP</div>
+        </div>
+        <div class="lesson-status ${status}">${statusIcon}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function selectLanguage(code){
+  const map=await getLangProgressMap();
+  if(!map[code]) map[code]=defaultLangProgress();
+  await saveLangProgressMap(map);
+  await dbPut('settings',{key:'active_lang_code',value:code});
+  renderTab('language');
+  showToast(`🌍 ${LANGUAGES[code].name} انتخاب شد`);
+}
+
+async function startLesson(lang,level,lessonId){
+  const lesson=LESSONS_DB[lang]?.[level]?.find(l=>l.id===lessonId);
+  if(!lesson){showToast('❌ درس یافت نشد');return;}
+
+  // Generate lesson content based on lesson ID
+  let content=generateLessonContent(lang,level,lessonId);
+
+  showModal(`📚 ${lesson.title}`,content.html,[
+    {text:'❌ بستن',action:closeModal,outline:true},
+    {text:'✅ تکمیل درس',action:async()=>{
+      // Check if exercise answered correctly (simplified)
+      await dbPut('language',{lessonId,lang,level,completed:true,xp:lesson.xp,completedAt:Date.now()});
+      const map=await getLangProgressMap();
+      if(!map[lang]) map[lang]=defaultLangProgress();
+      map[lang].xp=(map[lang].xp||0)+lesson.xp;
+      const today=Jalaali.now();const todayStr=`${today.jy}/${today.jm}/${today.jd}`;
+      if(map[lang].lastStudied!==todayStr){map[lang].streak=(map[lang].streak||0)+1;map[lang].lastStudied=todayStr;}
+      await saveLangProgressMap(map);
+      closeModal();showToast(`🎉 +${lesson.xp} XP!`);renderTab('language');
+    }}
+  ]);
+}
+
+function generateLessonContent(lang,level,lessonId){
+  const c=LESSON_CONTENT[lessonId];
+  if(!c){
+    return {html:`
+      <div class="empty-state">
+        <span class="icon">📚</span>
+        <p>درس در حال ساخت است...</p>
+        <div class="sub">بزودی محتوای کامل اضافه می‌شود</div>
+      </div>
+    `};
+  }
+  return {html:`
+    <div style="margin-bottom:1rem">
+      <div style="font-weight:700;color:var(--gl);margin-bottom:.5rem">📝 لغات جدید</div>
+      ${c.vocab.map(v=>`
+        <div class="vocab-card">
+          <div class="vocab-word">${escapeHtml(v.word)}</div>
+          <div class="vocab-meaning">${escapeHtml(v.meaning)}</div>
+          ${v.example?`<div class="vocab-example">${escapeHtml(v.example)}</div>`:''}
+        </div>
+      `).join('')}
+    </div>
+    ${c.exercise?`
+    <div style="margin-bottom:1rem">
+      <div style="font-weight:700;color:var(--gl);margin-bottom:.5rem">🎯 تمرین</div>
+      <div class="card" style="margin:0 0 .5rem 0">
+        <div style="font-size:.9rem">${escapeHtml(c.exercise.q)}</div>
+        <div style="display:flex;gap:8px;margin-top:.5rem;flex-wrap:wrap">
+          ${c.exercise.options.map(o=>`
+            <button class="btn-outline" style="flex:1;font-size:.75rem;min-width:70px" onclick="${o===c.exercise.answer?"this.style.background='var(--success)';this.style.color='#fff';showToast('✅ درست!')":"this.style.background='var(--danger)';this.style.color='#fff'"}">${escapeHtml(o)}</button>
+          `).join('')}
+        </div>
+      </div>
+    </div>`:''}
+    ${c.speak?`
+    <div>
+      <div style="font-weight:700;color:var(--gl);margin-bottom:.5rem">🗣️ تلفظ</div>
+      <button class="btn-outline" style="width:100%" onclick="speakText(${JSON.stringify(c.speak)},${JSON.stringify(lang)})">🔊 گوش دادن به تلفظ</button>
+    </div>`:''}
+  `};
+}
+
+function speakText(text,langCode){
+  if('speechSynthesis' in window){
+    const utterance=new SpeechSynthesisUtterance(text);
+    utterance.lang=TTS_LANG_MAP[langCode]||'en-US';
+    utterance.rate=0.9;
+    speechSynthesis.speak(utterance);
+    showToast('🔊 در حال پخش...');
+  }else{
+    showToast('❌ مرورگر پشتیبانی نمی‌کند');
+  }
+}
+
+async function startLangConversation(){
+  showModal('🗣️ مکالمه با AI',`
+    <div id="conv-messages" style="max-height:300px;overflow-y:auto;margin-bottom:1rem">
+      <div class="chat-msg ai" style="max-width:100%">
+        <div class="chat-avatar">🖤</div>
+        <div class="chat-bubble">Hello! Let's practice English. How are you today? Tell me about yourself! 👋</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input type="text" class="input" id="conv-input" placeholder="پاسخ انگلیسی بنویس..." style="flex:1" onkeydown="if(event.key==='Enter')sendConvMessage()"/>
+      <button class="btn-gold" onclick="sendConvMessage()">⬆️</button>
+    </div>
+  `,[{text:'❌ بستن',action:closeModal,outline:true}]);
+}
+
+async function sendConvMessage(){
+  const input=document.getElementById('conv-input');
+  const text=input.value.trim();
+  if(!text)return;
+  input.value='';
+
+  const container=document.getElementById('conv-messages');
+  container.innerHTML+=`<div class="chat-msg user" style="max-width:100%;margin-left:auto"><div class="chat-avatar">👤</div><div class="chat-bubble">${escapeHtml(text)}</div></div>`;
+  container.scrollTop=container.scrollHeight;
+
+  // Get AI response
+  let reply='Great job! Keep practicing. Try asking me a question now! 🎯';
+  if(isOnline){
+    try{
+      const resp=await fetch('/api/language/conversation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:'local',language:'english',message:text})});
+      if(resp.ok){const data=await resp.json();reply=data.ai_message;}
+    }catch(e){}
+  }else{
+    // Simple conversation logic
+    if(text.toLowerCase().includes('how are you')) reply="I'm great, thank you! And you? What did you do today? 😊";
+    else if(text.toLowerCase().includes('name')) reply="My name is ZHOVIKA! I'm your language teacher. What's your name?";
+    else if(text.toLowerCase().includes('thank')) reply="You're welcome! Let's continue. Can you describe your favorite food? 🍕";
+    else reply="Interesting! Tell me more about that. Can you make a longer sentence? 💪";
+  }
+
+  setTimeout(()=>{
+    container.innerHTML+=`<div class="chat-msg ai" style="max-width:100%"><div class="chat-avatar">🖤</div><div class="chat-bubble">${reply}</div></div>`;
+    container.scrollTop=container.scrollHeight;
+  },800);
+}
+
+async function showVocabReview(){
+  const vocab=await dbGetAll('vocabulary');
+  if(vocab.length===0){
+    showModal('📚 لغات من','<div class="empty-state"><span class="icon">📖</span><p>هنوز لغتی اضافه نشده</p><div class="sub">درس‌ها رو تکمیل کن تا لغت اضافه بشه</div></div>',[{text:'✅ بستن',action:closeModal}]);
+    return;
+  }
+
+  const word=vocab[Math.floor(Math.random()*vocab.length)];
+  showModal('📚 مرور لغت',`
+    <div style="text-align:center;padding:1rem">
+      <div style="font-size:2rem;font-weight:800;color:var(--gold);margin-bottom:.5rem">${word.word}</div>
+      <div style="font-size:1.1rem;color:var(--text2);margin-bottom:1rem">${word.meaning}</div>
+      <div style="font-size:.85rem;color:var(--text3);font-style:italic;margin-bottom:1rem">"${word.example||''}"</div>
+      <button class="btn-outline" style="width:100%" onclick="speakText('${word.word}')">🔊 تلفظ</button>
+    </div>
+  `,[{text:'❌ بستن',action:closeModal,outline:true},{text:'🔄 بعدی',action:showVocabReview}]);
+}
+
+// ═══════════════════════════════════════════
+// MORE MENU & OTHER SECTIONS
+// ═══════════════════════════════════════════
+function renderMore(container){
+  container.innerHTML=`
+    <div class="content-enter">
+      <div class="card" style="cursor:pointer" onclick="switchTab('calendar',null)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">📅</span>
+          <div><div style="font-weight:700">تقویم و برنامه‌ریزی</div><div style="font-size:.72rem;color:var(--text3)">تقویم شمسی کامل با رویدادها</div></div>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="switchTab('budget',null)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">💰</span>
+          <div><div style="font-weight:700">بودجه و هزینه‌ها</div><div style="font-size:.72rem;color:var(--text3)">مدیریت مالی شخصی</div></div>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="switchTab('exercise',null)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">💪</span>
+          <div><div style="font-weight:700">ورزش و تناسب اندام</div><div style="font-size:.72rem;color:var(--text3)">پیگیری تمرینات روزانه</div></div>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="switchTab('study',null)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">📚</span>
+          <div><div style="font-weight:700">مطالعه و یادگیری</div><div style="font-size:.72rem;color:var(--text3)">تکنیک‌های مرور و پومودورو</div></div>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="switchTab('reminders',null)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">⏰</span>
+          <div><div style="font-weight:700">یادآوری و Alarm</div><div style="font-size:.72rem;color:var(--text3)">تنظیم هشدارها</div></div>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="switchTab('social',null)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">📱</span>
+          <div><div style="font-weight:700">شبکه‌های اجتماعی</div><div style="font-size:.72rem;color:var(--text3)">اینستاگرام و تلگرام</div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════
+// BUDGET
+// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// GOAL & FINANCE
+// ═══════════════════════════════════════════
+async function getGoal(){
+  const rec=await dbGet('settings','goal');
+  return (rec&&rec.value)||null;
+}
+async function saveGoal(goal){
+  await dbPut('settings',{key:'goal',value:goal});
+}
+async function getBudgetLimit(){
+  const rec=await dbGet('settings','budget_limit');
+  return (rec&&rec.value)||0;
+}
+async function computeFinance(){
+  const expenses=await dbGetAll('expenses');
+  const income=await dbGetAll('income');
+  const debts=await dbGetAll('debts');
+  const goal=await getGoal();
+  const limit=await getBudgetLimit();
+
+  const totalExp=expenses.reduce((a,e)=>a+(e.amount||0),0);
+  const totalInc=income.reduce((a,i)=>a+(i.amount||0),0);
+  const totalDebt=debts.reduce((a,d)=>a+(d.amount||0),0);
+  const cash=totalInc-totalExp;
+  const netWorth=cash-totalDebt;
+
+  const jNow=Jalaali.now();
+  const thisMonthExp=expenses.filter(e=>{
+    const parts=(e.jDate||'').split('/').map(Number);
+    return parts[0]===jNow.jy&&parts[1]===jNow.jm;
+  }).reduce((a,e)=>a+(e.amount||0),0);
+  const overBudget=limit>0&&thisMonthExp>limit;
+
+  let progressPct=0,monthsRemaining=null,onTrack=null;
+  if(goal&&goal.targetCost>0){
+    progressPct=Math.max(0,Math.min(100,Math.round((netWorth/goal.targetCost)*100)));
+    const monthsSinceStart=Math.max(1,(Date.now()-(goal.createdAt||Date.now()))/(1000*60*60*24*30));
+    const avgMonthlyNet=netWorth/monthsSinceStart;
+    if(avgMonthlyNet>0){
+      monthsRemaining=Math.max(0,Math.ceil((goal.targetCost-netWorth)/avgMonthlyNet));
+      if(goal.years) onTrack=monthsRemaining<=goal.years*12;
+    }
+  }
+
+  return {expenses,income,debts,goal,limit,totalExp,totalInc,totalDebt,cash,netWorth,thisMonthExp,overBudget,progressPct,monthsRemaining,onTrack};
+}
+
+async function renderBudget(container){
+  const f=await computeFinance();
+
+  container.innerHTML=`
+    <div class="content-enter">
+      ${f.goal?`
+      <div class="card" style="text-align:center;border-color:rgba(201,168,76,.35)">
+        <div style="font-size:.75rem;color:var(--text3);font-weight:500">🎯 هدف اصلی · بازه ${f.goal.years||3} ساله</div>
+        <div style="font-size:1.1rem;font-weight:800;margin:.3rem 0">${escapeHtml(f.goal.title)}</div>
+        <div class="xp-bar" style="margin:.6rem auto"><div class="xp-fill" style="width:${f.progressPct}%"></div></div>
+        <div style="font-size:.8rem;color:var(--gl);font-weight:700">${f.progressPct}٪ به هدف رسیدی</div>
+        <div style="font-size:.72rem;color:var(--text3);margin-top:.3rem">هزینه هدف: ${f.goal.targetCost.toLocaleString('fa-IR')} تومان · دارایی خالص: ${f.netWorth.toLocaleString('fa-IR')} تومان</div>
+        ${f.monthsRemaining!==null?`<div style="font-size:.72rem;color:${f.onTrack?'var(--success)':'var(--danger)'};margin-top:.3rem">${f.onTrack?'✅':'⚠️'} با روند فعلی پس‌انداز، حدود ${f.monthsRemaining} ماه دیگر به هدف می‌رسی${f.onTrack===false?` (کندتر از برنامه ${f.goal.years||3} ساله)`:''}</div>`:`<div style="font-size:.7rem;color:var(--text3);margin-top:.3rem">با ثبت چند درآمد/هزینه، زمان تقریبی رسیدن به هدف رو حساب می‌کنم</div>`}
+        <button class="btn-outline" style="margin-top:.6rem;font-size:.72rem" onclick="showGoalModal()">✏️ ویرایش هدف</button>
+      </div>`:`
+      <div class="card" style="text-align:center">
+        <div style="font-size:2rem;margin-bottom:.4rem">🎯</div>
+        <div style="font-size:.85rem;color:var(--text2);margin-bottom:.6rem">هنوز هدف بلندمدتی تنظیم نکردی</div>
+        <button class="btn-gold" onclick="showGoalModal()">+ تنظیم هدف</button>
+      </div>`}
+
+      ${f.overBudget?`
+      <div class="card" style="border-color:var(--danger);background:rgba(255,68,68,.08)">
+        <div style="font-size:.85rem;font-weight:700;color:var(--danger)">⚠️ از محدودیت بودجه‌ی این ماه گذشتی!</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">هزینه این ماه: ${f.thisMonthExp.toLocaleString('fa-IR')} از ${f.limit.toLocaleString('fa-IR')} تومان</div>
+      </div>`:''}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+        <div class="card" style="text-align:center;padding:.8rem">
+          <div style="font-size:.7rem;color:var(--text3)">💵 نقد فعلی</div>
+          <div style="font-size:1.3rem;font-weight:800;color:${f.cash<0?'var(--danger)':'var(--gold)'}">${f.cash.toLocaleString('fa-IR')}</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.8rem">
+          <div style="font-size:.7rem;color:var(--text3)">📉 بدهی کل</div>
+          <div style="font-size:1.3rem;font-weight:800;color:${f.totalDebt>0?'var(--danger)':'var(--text)'}">${f.totalDebt.toLocaleString('fa-IR')}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:1rem;overflow-x:auto">
+        <button class="btn-gold" style="flex:1;white-space:nowrap" onclick="showAddExpenseModal()">+ هزینه</button>
+        <button class="btn-outline" style="flex:1;white-space:nowrap" onclick="showAddIncomeModal()">+ درآمد</button>
+        <button class="btn-outline" style="flex:1;white-space:nowrap" onclick="showAddDebtModal()">+ بدهی</button>
+        <button class="btn-outline" style="flex:1;white-space:nowrap" onclick="showBudgetLimitModal()">⚡ محدودیت</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 دسته‌بندی هزینه‌ها</div>
+        ${renderBudgetSummary(f.expenses)}
+      </div>
+
+      <div class="card">
+        <div class="card-title">💼 منابع درآمد (شغل‌ها)</div>
+        ${f.income.slice(-10).reverse().map(i=>`
+          <div class="budget-row">
+            <span style="font-size:.85rem;font-weight:500">${escapeHtml(i.source||'بدون عنوان')}</span>
+            <span style="font-size:.85rem;color:var(--success);font-weight:700">+${(i.amount||0).toLocaleString('fa-IR')}</span>
+          </div>
+        `).join('')||'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2rem">💼</span><p>هنوز درآمدی ثبت نشده</p></div>'}
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 تراکنش‌های اخیر</div>
+        ${f.expenses.slice(-10).reverse().map(e=>`
+          <div class="budget-row">
+            <span style="font-size:.85rem;font-weight:500">${escapeHtml(e.title||'بدون عنوان')}</span>
+            <span style="font-size:.85rem;color:var(--gl);font-weight:700">-${(e.amount||0).toLocaleString('fa-IR')}</span>
+          </div>
+        `).join('')||'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2rem">💰</span><p>هنوز هزینه‌ای ثبت نشده</p></div>'}
+      </div>
+
+      ${f.debts.length?`
+      <div class="card">
+        <div class="card-title">📉 بدهی‌ها</div>
+        ${f.debts.map(d=>`
+          <div class="budget-row">
+            <span style="font-size:.85rem;font-weight:500">${escapeHtml(d.name||'بدهی')}${d.note?' — '+escapeHtml(d.note):''}</span>
+            <span style="font-size:.85rem;color:var(--danger);font-weight:700">${(d.amount||0).toLocaleString('fa-IR')}
+              <span style="cursor:pointer;margin-right:6px" onclick="deleteDebt(${d.id})">🗑️</span>
+            </span>
+          </div>
+        `).join('')}
+      </div>`:''}
+    </div>
+  `;
+}
+
+function showAddExpenseModal(){
+  const jNow=Jalaali.now();
+  showModal('💰 هزینه جدید',`
+    <input type="text" class="input" id="exp-title" placeholder="عنوان..." style="margin-bottom:.6rem"/>
+    <input type="number" class="input" id="exp-amount" placeholder="مبلغ (تومان)..." style="margin-bottom:.6rem"/>
+    <select class="input" id="exp-cat" style="margin-bottom:.6rem">
+      <option value="food">🍔 غذا</option>
+      <option value="transport">🚗 حمل‌ونقل</option>
+      <option value="shopping">🛍️ خرید</option>
+      <option value="bills">💡 قبوض</option>
+      <option value="other">📦 سایر</option>
+    </select>
+    <input type="text" class="input" id="exp-jdate" value="${jNow.jy}/${jNow.jm}/${jNow.jd}" placeholder="تاریخ شمسی"/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      const title=document.getElementById('exp-title').value;
+      const amount=parseInt(document.getElementById('exp-amount').value)||0;
+      const category=document.getElementById('exp-cat').value;
+      const jDate=document.getElementById('exp-jdate').value;
+      if(!title||!amount){showToast('❌ لطفاً همه فیلدها را پر کنید');return;}
+      await dbPut('expenses',{title,amount,category,jDate,created:Date.now()});
+      closeModal();
+      const f=await computeFinance();
+      if(f.overBudget) showToast('⚠️ از محدودیت بودجه‌ی ماه گذشتی!');
+      else showToast('💰 ثبت شد');
+      renderTab('budget');
+    }}
+  ]);
+}
+
+function showAddIncomeModal(){
+  const jNow=Jalaali.now();
+  showModal('💼 درآمد جدید',`
+    <input type="text" class="input" id="inc-source" placeholder="از کجا؟ (مثلاً: شغل نجاری)" style="margin-bottom:.6rem"/>
+    <input type="number" class="input" id="inc-amount" placeholder="مبلغ (تومان)..." style="margin-bottom:.6rem"/>
+    <input type="text" class="input" id="inc-jdate" value="${jNow.jy}/${jNow.jm}/${jNow.jd}" placeholder="تاریخ شمسی"/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      const source=document.getElementById('inc-source').value;
+      const amount=parseInt(document.getElementById('inc-amount').value)||0;
+      const jDate=document.getElementById('inc-jdate').value;
+      if(!source||!amount){showToast('❌ لطفاً همه فیلدها را پر کنید');return;}
+      await dbPut('income',{source,amount,jDate,created:Date.now()});
+      closeModal();showToast('💼 درآمد ثبت شد');renderTab('budget');
+    }}
+  ]);
+}
+
+function showAddDebtModal(){
+  showModal('📉 بدهی جدید',`
+    <input type="text" class="input" id="debt-name" placeholder="بابت چی؟" style="margin-bottom:.6rem"/>
+    <input type="number" class="input" id="debt-amount" placeholder="مبلغ (تومان)..." style="margin-bottom:.6rem"/>
+    <input type="text" class="input" id="debt-note" placeholder="توضیح (اختیاری)"/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      const name=document.getElementById('debt-name').value;
+      const amount=parseInt(document.getElementById('debt-amount').value)||0;
+      const note=document.getElementById('debt-note').value;
+      if(!name||!amount){showToast('❌ لطفاً همه فیلدها را پر کنید');return;}
+      await dbPut('debts',{name,amount,note,created:Date.now()});
+      closeModal();showToast('📉 بدهی ثبت شد');renderTab('budget');
+    }}
+  ]);
+}
+
+async function deleteDebt(id){await dbDelete('debts',id);showToast('✅ بدهی حذف شد');renderTab('budget');}
+
+async function showGoalModal(){
+  const goal=await getGoal();
+  showModal('🎯 هدف بلندمدت',`
+    <input type="text" class="input" id="goal-title" value="${goal?escapeHtml(goal.title):''}" placeholder="مثلاً: راه‌اندازی پیتزا/پاستافروشی" style="margin-bottom:.6rem" oninput="updateGoalCostSuggestion()"/>
+    <input type="number" class="input" id="goal-cost" value="${goal?goal.targetCost:''}" placeholder="هزینه‌ی مورد نیاز (تومان)" style="margin-bottom:.4rem"/>
+    <div id="goal-cost-suggestion" style="font-size:.7rem;color:var(--text3);margin-bottom:.6rem;min-height:1.2em"></div>
+    <label style="font-size:.72rem;color:var(--text3);display:block;margin-bottom:.2rem">بازه‌ی زمانی هدف (سال)</label>
+    <input type="number" class="input" id="goal-years" value="${goal&&goal.years?goal.years:3}" placeholder="مثلاً ۳"/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      const title=document.getElementById('goal-title').value;
+      const targetCost=parseInt(document.getElementById('goal-cost').value)||0;
+      const years=parseInt(document.getElementById('goal-years').value)||3;
+      if(!title||!targetCost){showToast('❌ لطفاً همه فیلدها را پر کنید');return;}
+      await saveGoal({title,targetCost,years,createdAt:(goal&&goal.createdAt)||Date.now()});
+      closeModal();showToast('🎯 هدف ذخیره شد');renderTab('budget');
+    }}
+  ]);
+  updateGoalCostSuggestion();
+}
+
+function suggestGoalCost(title){
+  const t=(title||'').toLowerCase();
+  // Rough 1404 (2025/26) Iran market estimates for a small food-service shop:
+  // equipment + setup commonly runs ~800M–1.2B toman before rent/deposit,
+  // more for a full restaurant. Presented as an adjustable starting point, not a quote.
+  if(/پیتزا|پاستا|فست\s*فود|فست‌فود|رستوران|کافه|کافی\s*شاپ/.test(t)){
+    return {amount:800000000,note:'بر اساس بررسی بازار ایران، راه‌اندازی یه پیتزا/فست‌فود کوچیک معمولاً حدود ۸۰۰ میلیون تا ۱.۲ میلیارد تومان (تجهیزات + مواد اولیه + دکوراسیون، بدون احتساب رهن مغازه) لازم داره. عدد پیشنهادی رو می‌تونی با شرایط خودت (شهر، اندازه، رهن) عوض کنی.'};
+  }
+  return null;
+}
+
+function updateGoalCostSuggestion(){
+  const titleEl=document.getElementById('goal-title');
+  const costEl=document.getElementById('goal-cost');
+  const box=document.getElementById('goal-cost-suggestion');
+  if(!titleEl||!box)return;
+  const s=suggestGoalCost(titleEl.value);
+  if(s){
+    box.innerHTML=`💡 ${s.note} <span style="color:var(--gl);cursor:pointer;text-decoration:underline" onclick="document.getElementById('goal-cost').value=${s.amount};updateGoalCostSuggestion()">پر کردن با ${s.amount.toLocaleString('fa-IR')}</span>`;
+  }else{
+    box.innerHTML='';
+  }
+}
+
+async function showBudgetLimitModal(){
+  const limit=await getBudgetLimit();
+  showModal('⚡ محدودیت بودجه',`
+    <input type="number" class="input" id="budget-limit" value="${limit||''}" placeholder="محدودیت ماهانه (تومان)..."/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'✅ ذخیره',action:async()=>{
+      const val=parseInt(document.getElementById('budget-limit').value)||0;
+      await dbPut('settings',{key:'budget_limit',value:val});
+      closeModal();showToast('⚡ محدودیت ذخیره شد');renderTab('budget');
+    }}
+  ]);
+}
+
+// ═══════════════════════════════════════════
+// EXERCISE
+// ═══════════════════════════════════════════
+async function renderExercise(container){
+  const exercises=await dbGetAll('exercises');
+  const jNow=Jalaali.now();
+  const jDateStr=`${jNow.jy}/${jNow.jm}/${jNow.jd}`;
+  const todayEx=exercises.filter(e=>e.jDate===jDateStr);
+  const totalCal=todayEx.reduce((a,e)=>a+(e.calories||0),0);
+  const totalMin=todayEx.reduce((a,e)=>a+(e.duration||0),0);
+
+  container.innerHTML=`
+    <div class="content-enter">
+      <div class="ex-stat">
+        <div class="ex-stat-item"><div class="ex-stat-value">${todayEx.length}</div><div class="ex-stat-label">تمرین امروز</div></div>
+        <div class="ex-stat-item"><div class="ex-stat-value">${totalMin}</div><div class="ex-stat-label">دقیقه</div></div>
+        <div class="ex-stat-item"><div class="ex-stat-value">${totalCal}</div><div class="ex-stat-label">کالری</div></div>
+        <div class="ex-stat-item"><div class="ex-stat-value">${exercises.length}</div><div class="ex-stat-label">کل تمرینات</div></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:1rem">
+        <button class="btn-gold" style="flex:1" onclick="showAddExerciseModal()">+ تمرین جدید</button>
+        <button class="btn-outline" style="flex:1" onclick="showWorkoutPlan()">📋 برنامه</button>
+      </div>
+      <div class="card">
+        <div class="card-title">💪 تمرینات امروز</div>
+        ${todayEx.length===0?'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2.5rem">🏃</span><p>امروز هنوز تمرینی نداری</p></div>':
+          todayEx.map(e=>`
+            <div class="budget-row">
+              <span style="font-size:.85rem;font-weight:500">${e.name}</span>
+              <span style="font-size:.8rem;color:var(--text3)">${e.duration} دقیقه · ${e.calories} کالری${e.sets?' · '+e.sets:''}</span>
+            </div>
+          `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">📋 برنامه پیشنهادی امروز</div>
+        <div class="budget-row"><span style="font-size:.85rem">🏃 پیاده‌روی سریع</span><span style="font-size:.8rem;color:var(--gl)">۳۰ دقیقه</span></div>
+        <div class="budget-row"><span style="font-size:.85rem">🦵 اسکوات</span><span style="font-size:.8rem;color:var(--gl)">۳ ست × ۱۵</span></div>
+        <div class="budget-row"><span style="font-size:.85rem">💪 شنا</span><span style="font-size:.8rem;color:var(--gl)">۳ ست × ۱۰</span></div>
+        <div class="budget-row"><span style="font-size:.85rem">🧘 کشش</span><span style="font-size:.8rem;color:var(--gl)">۱۰ دقیقه</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function showAddExerciseModal(){
+  const jNow=Jalaali.now();
+  showModal('💪 تمرین جدید',`
+    <input type="text" class="input" id="ex-name" placeholder="نام تمرین..." style="margin-bottom:.6rem"/>
+    <input type="number" class="input" id="ex-duration" placeholder="مدت (دقیقه)..." style="margin-bottom:.6rem"/>
+    <input type="number" class="input" id="ex-calories" placeholder="کالری سوخته..." style="margin-bottom:.6rem"/>
+    <select class="input" id="ex-type">
+      <option value="cardio">🏃 کاردیو</option>
+      <option value="strength">💪 قدرتی</option>
+      <option value="flexibility">🧘 انعطاف‌پذیری</option>
+      <option value="sport">⚽ ورزش</option>
+    </select>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      const name=document.getElementById('ex-name').value;
+      const duration=parseInt(document.getElementById('ex-duration').value)||0;
+      const calories=parseInt(document.getElementById('ex-calories').value)||0;
+      const type=document.getElementById('ex-type').value;
+      if(!name){showToast('❌ نام تمرین را وارد کنید');return;}
+      await dbPut('exercises',{name,duration,calories,type,jDate:`${jNow.jy}/${jNow.jm}/${jNow.jd}`,created:Date.now()});
+      closeModal();showToast('💪 تمرین ثبت شد');renderTab('exercise');
+    }}
+  ]);
+}
+
+function showWorkoutPlan(){
+  showModal('📋 برنامه ورزشی هفتگی',`
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">شنبه — بالا تنه</div><div style="font-size:.72rem;color:var(--text3)">شنا · پرس سینه · جلو بازو · شکم</div></div>
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">یکشنبه — پایین تنه</div><div style="font-size:.72rem;color:var(--text3)">اسکوات · لانگ · ساق · باسن</div></div>
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">دوشنبه — استراحت / یوگا</div></div>
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">سه‌شنبه — کاردیو</div><div style="font-size:.72rem;color:var(--text3)">دویدن · دوچرخه · شنا</div></div>
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">چهارشنبه — بالا تنه</div></div>
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">پنجشنبه — پایین تنه</div></div>
+      <div class="card" style="margin:0"><div style="font-size:.85rem;font-weight:700">جمعه — استراحت</div></div>
+    </div>
+  `,[{text:'✅ بستن',action:closeModal}]);
+}
+
+// ═══════════════════════════════════════════
+// STUDY
+// ═══════════════════════════════════════════
+async function renderStudy(container){
+  const items=await dbGetAll('study');
+  container.innerHTML=`
+    <div class="content-enter">
+      <div style="display:flex;gap:10px;margin-bottom:1rem">
+        <button class="btn-gold" style="flex:1" onclick="showAddStudyModal()">+ درس جدید</button>
+        <button class="btn-outline" style="flex:1" onclick="startPomodoro()">⏱️ پومودورو</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📚 درس‌های من</div>
+        ${items.length===0?'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2.5rem">📖</span><p>هنوز درسی اضافه نکردید</p></div>':
+          items.map(s=>`
+            <div class="study-card" onclick="showStudyDetail(${s.id})">
+              <div class="study-progress" style="--deg:${(s.progress||0)*3.6}deg">
+                <div class="study-progress-inner">${s.progress||0}%</div>
+              </div>
+              <div style="flex:1">
+                <div style="font-size:.9rem;font-weight:700">${s.title}</div>
+                <div style="font-size:.72rem;color:var(--text3)">${s.subject||''} · ${s.sessions||0} جلسه</div>
+              </div>
+            </div>
+          `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">⏱️ تایمر پومودورو</div>
+        <div style="text-align:center;padding:1.5rem">
+          <div style="font-size:3.5rem;font-weight:800;color:var(--gold);font-family:monospace" id="pomo-display">25:00</div>
+          <div style="font-size:.8rem;color:var(--text3);margin-top:.5rem">۲۵ دقیقه تمرکز · ۵ دقیقه استراحت</div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:1.2rem">
+            <button class="btn-gold" onclick="togglePomodoro()" id="pomo-btn">▶️ شروع</button>
+            <button class="btn-outline" onclick="resetPomodoro()">🔄 ریست</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+let pomoTimer=null,pomoTime=25*60,pomoRunning=false;
+function startPomodoro(){renderTab('study');}
+function togglePomodoro(){
+  const btn=document.getElementById('pomo-btn');
+  if(pomoRunning){clearInterval(pomoTimer);pomoRunning=false;btn.textContent='▶️ ادامه';}
+  else{pomoRunning=true;btn.textContent='⏸️ توقف';pomoTimer=setInterval(()=>{pomoTime--;updatePomoDisplay();if(pomoTime<=0){clearInterval(pomoTimer);pomoRunning=false;showToast('⏱️ پومودورو تمام شد! استراحت ۵ دقیقه‌ای ☕');btn.textContent='▶️ شروع';pomoTime=25*60;updatePomoDisplay();}},1000);}
+}
+function resetPomodoro(){clearInterval(pomoTimer);pomoRunning=false;pomoTime=25*60;updatePomoDisplay();const el=document.getElementById('pomo-btn');if(el)el.textContent='▶️ شروع';}
+function updatePomoDisplay(){const m=Math.floor(pomoTime/60),s=pomoTime%60;const el=document.getElementById('pomo-display');if(el)el.textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;}
+
+function showAddStudyModal(){
+  showModal('📚 درس جدید',`
+    <input type="text" class="input" id="study-title" placeholder="عنوان درس..." style="margin-bottom:.6rem"/>
+    <input type="text" class="input" id="study-subject" placeholder="موضوع..." style="margin-bottom:.6rem"/>
+    <input type="number" class="input" id="study-goal" placeholder="هدف (ساعت)..." style="margin-bottom:.6rem"/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      const title=document.getElementById('study-title').value;
+      const subject=document.getElementById('study-subject').value;
+      const goal=parseInt(document.getElementById('study-goal').value)||0;
+      if(!title){showToast('❌ عنوان درس را وارد کنید');return;}
+      await dbPut('study',{title,subject,goal,progress:0,sessions:0,created:Date.now()});
+      closeModal();showToast('📚 درس اضافه شد');renderTab('study');
+    }}
+  ]);
+}
+
+// ═══════════════════════════════════════════
+// REMINDERS
+// ═══════════════════════════════════════════
+async function renderReminders(container){
+  const rems=await dbGetAll('reminders');
+  rems.sort((a,b)=>a.time-b.time);
+  container.innerHTML=`
+    <div class="content-enter">
+      <div style="display:flex;gap:10px;margin-bottom:1rem">
+        <button class="btn-gold" style="flex:1" onclick="showAddReminderModal()">+ یادآوری جدید</button>
+      </div>
+      <div class="card">
+        <div class="card-title">⏰ یادآوری‌ها</div>
+        ${rems.length===0?'<div class="empty-state" style="padding:1rem"><span class="icon" style="font-size:2.5rem">🔔</span><p>هنوز یادآوری ندارید</p></div>':
+          rems.map(r=>`
+            <div class="rem-item">
+              <div class="rem-time">${r.timeStr||'--:--'}</div>
+              <div class="rem-text">${r.text}</div>
+              <div class="rem-toggle ${r.active?'on':''}" onclick="toggleReminder(${r.id})"></div>
+              <span style="cursor:pointer;font-size:1.1rem" onclick="deleteReminder(${r.id})">🗑️</span>
+            </div>
+          `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function showAddReminderModal(){
+  showModal('⏰ یادآوری جدید',`
+    <input type="text" class="input" id="rem-text" placeholder="متن یادآوری..." style="margin-bottom:.6rem"/>
+    <input type="time" class="input" id="rem-time" style="margin-bottom:.6rem"/>
+    <select class="input" id="rem-repeat">
+      <option value="once">🔁 یک بار</option>
+      <option value="daily">📅 هر روز</option>
+      <option value="weekly">📆 هفتگی</option>
+    </select>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'✅ ذخیره',action:async()=>{
+      const text=document.getElementById('rem-text').value;
+      const timeStr=document.getElementById('rem-time').value;
+      const repeat=document.getElementById('rem-repeat').value;
+      if(!text||!timeStr){showToast('❌ لطفاً همه فیلدها را پر کنید');return;}
+      const [h,m]=timeStr.split(':').map(Number);
+      const time=new Date();time.setHours(h,m,0,0);
+      await dbPut('reminders',{text,timeStr,time:time.getTime(),repeat,active:true,created:Date.now()});
+      closeModal();showToast('⏰ یادآوری تنظیم شد');renderTab('reminders');
+    }}
+  ]);
+}
+
+async function toggleReminder(id){
+  const tx=db.transaction('reminders','readwrite');
+  const req=tx.objectStore('reminders').get(id);
+  req.onsuccess=async()=>{const r=req.result;r.active=!r.active;await dbPut('reminders',r);renderTab('reminders');};
+}
+async function deleteReminder(id){await dbDelete('reminders',id);renderTab('reminders');showToast('🗑️ حذف شد');}
+
+// ═══════════════════════════════════════════
+// SOCIAL MEDIA
+// ═══════════════════════════════════════════
+function renderSocial(container){
+  container.innerHTML=`
+    <div class="content-enter">
+      <div class="social-card">
+        <div class="social-header">
+          <div class="social-icon ig-icon">📷</div>
+          <div><div style="font-weight:700">اینستاگرام</div><div style="font-size:.72rem;color:var(--text3)">مدیریت پست و استوری</div></div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-gold" style="flex:1;font-size:.78rem" onclick="showIGPostModal()">📝 پست جدید</button>
+          <button class="btn-outline" style="flex:1;font-size:.78rem" onclick="showIGStoryModal()">📸 استوری</button>
+        </div>
+      </div>
+      <div class="social-card">
+        <div class="social-header">
+          <div class="social-icon tg-icon">✈️</div>
+          <div><div style="font-weight:700">تلگرام</div><div style="font-size:.72rem;color:var(--text3)">ربات و ادمین کانال</div></div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn-gold" style="flex:1;font-size:.78rem" onclick="showTGBroadcastModal()">📢 ارسال پیام</button>
+          <button class="btn-outline" style="flex:1;font-size:.78rem" onclick="showTGScheduleModal()">⏰ زمان‌بندی</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 آمار</div>
+        <div class="budget-row"><span style="font-size:.85rem">📷 پست‌های امروز</span><span style="font-size:.85rem;color:var(--gl);font-weight:700">۰</span></div>
+        <div class="budget-row"><span style="font-size:.85rem">📸 استوری‌های امروز</span><span style="font-size:.85rem;color:var(--gl);font-weight:700">۰</span></div>
+        <div class="budget-row"><span style="font-size:.85rem">✈️ پیام‌های تلگرام</span><span style="font-size:.85rem;color:var(--gl);font-weight:700">۰</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function showIGPostModal(){
+  showModal('📝 پست اینستاگرام',`
+    <textarea class="input" id="ig-caption" placeholder="کپشن پست..." style="margin-bottom:.6rem;min-height:80px"></textarea>
+    <input type="file" class="input" id="ig-image" accept="image/*" style="margin-bottom:.6rem"/>
+    <input type="text" class="input" id="ig-tags" placeholder="هشتگ‌ها..." style="margin-bottom:.6rem"/>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text2)"><input type="checkbox" id="ig-schedule"/> زمان‌بندی</label>
+    <input type="datetime-local" class="input" id="ig-schedule-time" style="margin-top:.5rem;display:none"/>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'📤 ارسال',action:()=>{if(!isOnline){showToast('❌ حالت آنلاین را فعال کنید');return;}closeModal();showToast('📤 پست در صف ارسال');}}
+  ]);
+  document.getElementById('ig-schedule').onchange=function(){document.getElementById('ig-schedule-time').style.display=this.checked?'block':'none';};
+}
+
+function showTGBroadcastModal(){
+  showModal('📢 پیام تلگرام',`
+    <textarea class="input" id="tg-msg" placeholder="متن پیام..." style="min-height:100px;margin-bottom:.6rem"></textarea>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text2);margin-bottom:.5rem"><input type="checkbox" id="tg-pin"/> 📌 سنجاق</label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text2)"><input type="checkbox" id="tg-silent"/> 🔇 بی‌صدا</label>
+  `,[
+    {text:'❌ انصراف',action:closeModal,outline:true},
+    {text:'📤 ارسال',action:()=>{if(!isOnline){showToast('❌ حالت آنلاین را فعال کنید');return;}closeModal();showToast('📤 پیام ارسال شد');}}
+  ]);
+}
+
+// ═══════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════
+function showSettings(){
+  showModal('⚙️ تنظیمات',`
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="font-size:.78rem;color:var(--text3);display:block;margin-bottom:5px;font-weight:600">نام شما</label>
+        <input type="text" class="input" id="set-name" value="${userSettings.name||''}" placeholder="نام..."/>
+      </div>
+      <div>
+        <label style="font-size:.78rem;color:var(--text3);display:block;margin-bottom:5px;font-weight:600">واحد پول</label>
+        <select class="input" id="set-currency">
+          <option value="IRR" ${userSettings.currency==='IRR'?'selected':''}>🇮🇷 تومان</option>
+          <option value="USD" ${userSettings.currency==='USD'?'selected':''}>🇺🇸 دلار</option>
+          <option value="EUR" ${userSettings.currency==='EUR'?'selected':''}>🇪🇺 یورو</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:.78rem;color:var(--text3);display:block;margin-bottom:5px;font-weight:600">اعلان‌ها</label>
+        <button class="btn-outline" style="width:100%" onclick="requestNotification()">🔔 درخواست دسترسی اعلان</button>
+      </div>
+      <div>
+        <label style="font-size:.78rem;color:var(--text3);display:block;margin-bottom:5px;font-weight:600">داده‌ها</label>
+        <button class="btn-outline" style="width:100%;margin-bottom:.5rem" onclick="exportData()">📤 خروجی JSON</button>
+        <button class="btn-outline" style="width:100%;color:var(--danger);border-color:rgba(255,68,68,.3)" onclick="clearAllData()">🗑️ حذف همه داده‌ها</button>
+      </div>
+      <div style="font-size:.7rem;color:var(--text3);text-align:center;margin-top:.5rem;line-height:1.6">
+        <div style="font-weight:700;color:var(--gl);margin-bottom:.3rem">ZHOVIKA Personal Assistant v2.0</div>
+        <div>ساخته شده با 🖤 برای تو</div>
+        <div style="margin-top:.3rem">PWA · آفلاین · AI-powered</div>
+      </div>
+    </div>
+  `,[
+    {text:'❌ بستن',action:closeModal,outline:true},
+    {text:'💾 ذخیره',action:async()=>{
+      userSettings.name=document.getElementById('set-name').value;
+      userSettings.currency=document.getElementById('set-currency').value;
+      await dbPut('settings',{key:'user',value:userSettings});
+      closeModal();showToast('💾 تنظیمات ذخیره شد');renderTab('home');
+    }}
+  ]);
+}
+
+function requestNotification(){
+  if('Notification' in window){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted') showToast('🔔 اعلان‌ها فعال شد');
+      else showToast('❌ دسترسی رد شد');
+    });
+  }else showToast('❌ مرورگر پشتیبانی نمی‌کند');
+}
+
+async function exportData(){
+  const data={};
+  for(const store of ['tasks','notes','reminders','expenses','exercises','study','chat','events','language','vocabulary','income','debts','timelog']){
+    data[store]=await dbGetAll(store);
+  }
+  data.settings=userSettings;
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='zhovika-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  showToast('📤 خروجی گرفته شد');
+}
+
+async function clearAllData(){
+  if(!confirm('⚠️ آیا مطمئنید؟ همه داده‌ها حذف می‌شوند!'))return;
+  for(const store of ['tasks','notes','reminders','expenses','exercises','study','chat','events','language','vocabulary','income','debts','timelog']){
+    const tx=db.transaction(store,'readwrite');tx.objectStore(store).clear();
+  }
+  showToast('🗑️ همه داده‌ها حذف شد');renderTab('home');
+}
+
+// ═══════════════════════════════════════════
+// MODAL SYSTEM
+// ═══════════════════════════════════════════
+let __modalActionRefs=[];
+function showModal(title,bodyHtml,buttons){
+  const overlay=document.getElementById('modal-overlay');
+  const content=document.getElementById('modal-content');
+  __modalActionRefs=buttons.map(b=>b.action);
+  content.innerHTML=`
+    <div class="modal-header">
+      <h3 style="font-size:.95rem;font-weight:800">${title}</h3>
+      <button class="btn-icon" style="width:36px;height:36px;font-size:.85rem" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">${bodyHtml}</div>
+    <div class="modal-footer">
+      ${buttons.map((b,i)=>`<button class="${b.outline?'btn-outline':'btn-gold'}" onclick="__modalActionRefs[${i}]()">${b.text}</button>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+// ═══════════════════════════════════════════
+// SYNC (Online Mode)
+// ═══════════════════════════════════════════
+async function syncData(){
+  if(!isOnline)return;
+  showToast('🌐 در حال همگام‌سازی...',2000);
+  try{
+    const data={};
+    for(const store of ['tasks','notes','reminders','expenses','exercises','study','chat','events','language','income','debts','timelog']){
+      data[store]=await dbGetAll(store);
+    }
+    const resp=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:'local',...data})});
+    if(resp.ok) showToast('✅ همگام‌سازی انجام شد');
+  }catch(e){showToast('❌ خطا در همگام‌سازی');}
+}
+
+// ═══════════════════════════════════════════
+// PWA INSTALL
+// ═══════════════════════════════════════════
+function installPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice=>{
+      if(choice.outcome==='accepted'){
+        showToast('📱 ZHOVIKA نصب شد!');
+        document.getElementById('install-banner').classList.remove('show');
+      }
+      deferredPrompt=null;
+    });
+  }else{
+    showToast('ℹ️ مرورگر شما از نصب PWA پشتیبانی نمی‌کند. می‌تونی از Safari > Share > Add to Home Screen استفاده کنی.');
+  }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+async function init(){
+  await initDB();
+
+  // Load settings
+  const tx=db.transaction('settings','readonly');
+  const req=tx.objectStore('settings').get('user');
+  req.onsuccess=()=>{if(req.result){userSettings=req.result.value;}};
+
+  const langReq=tx.objectStore('settings').get('current_lang');
+  langReq.onsuccess=()=>{if(langReq.result) currentLang=langReq.result.value;};
+
+  renderTab('home');
+
+  // Register service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(reg=>{
+      console.log('SW registered');
+    }).catch(e=>console.log('SW failed',e));
+  }
+
+  // PWA install prompt
+  window.addEventListener('beforeinstallprompt',(e)=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    setTimeout(()=>document.getElementById('install-banner').classList.add('show'),2000);
+  });
+
+  // iOS install detection
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  if(isIOS&&!isStandalone){
+    setTimeout(()=>{
+      document.getElementById('install-banner').innerHTML="<span>📱 برای نصب: Safari > Share > Add to Home Screen</span><button onclick=\"document.getElementById('install-banner').classList.remove('show')\">بستن</button>";
+      document.getElementById('install-banner').classList.add('show');
+    },3000);
+  }
+
+  // Notification request
+  if('Notification' in window&&Notification.permission==='default'){
+    setTimeout(()=>Notification.requestPermission(),5000);
+  }
+
+  // Check online status
+  window.addEventListener('online',()=>{isOnline=true;document.getElementById('online-toggle').classList.add('online');document.querySelector('.online-toggle .txt').textContent='آنلاین';showToast('🌐 اینترنت وصل شد');});
+  window.addEventListener('offline',()=>{isOnline=false;document.getElementById('online-toggle').classList.remove('online');document.querySelector('.online-toggle .txt').textContent='آفلاین';showToast('🔌 اینترنت قطع شد');});
+}
+
+// Handle sub-pages
+const originalSwitchTab=switchTab;
+switchTab=function(tab,el){
+  const subPages=['calendar','budget','exercise','study','reminders','social'];
+  if(subPages.includes(tab)){
+    currentTab=tab;
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    renderTab(tab);
+    return;
+  }
+  originalSwitchTab(tab,el);
+};
+
+init();
+</script>
+</body>
+</html>
